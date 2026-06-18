@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>账号管理 - 数独共创乐园</title>
+    <script>
+        // 在页面加载前设置主题，避免闪烁
+        (function() {
+            const savedTheme = localStorage.getItem('currentTheme') || 'orange';
+            const themes = {
+                orange: 'linear-gradient(135deg, #FFA726 0%, #FF7043 100%)',
+                blue: 'linear-gradient(135deg, #1E88E5 0%, #1565C0 100%)',
+                purple: 'linear-gradient(135deg, #7E57C2 0%, #5E35B1 100%)',
+                green: 'linear-gradient(135deg, #43A047 0%, #2E7D32 100%)',
+                pink: 'linear-gradient(135deg, #EC407A 0%, #D81B60 100%)',
+                cyan: 'linear-gradient(135deg, #00ACC1 0%, #00838F 100%)',
+                dark: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)'
+            };
+            document.documentElement.style.setProperty('--theme-gradient', themes[savedTheme] || themes.orange);
+        })();
+    </script>
+    <link rel="stylesheet" href="public/home.css">
+    <link rel="stylesheet" href="public/settings.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #FFA726 0%, #FF7043 100%);
+            font-family: "Noto Sans SC", "Source Han Sans CN", "Microsoft YaHei", sans-serif;
+            color: #FFFFFF;
+        }
+
+        .account-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .nav-back {
+            display: inline-block;
+            margin-bottom: 30px;
+            color: #FFFFFF;
+            text-decoration: none;
+            font-size: 14px;
+            opacity: 0.9;
+            transition: opacity 0.3s;
+        }
+
+        .nav-back:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+        }
+
+        .message.success {
+            background: rgba(76, 175, 80, 0.8);
+            color: #FFFFFF;
+            display: block;
+        }
+
+        .message.error {
+            background: rgba(244, 67, 54, 0.8);
+            color: #FFFFFF;
+            display: block;
+        }
+
+        /* 标签切换 */
+        .account-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            background: none;
+            border: none;
+        }
+
+        .tab.active {
+            color: #FFFFFF;
+            border-bottom-color: #FFFFFF;
+        }
+
+        .tab:hover {
+            color: #FFFFFF;
+        }
+
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #FFFFFF;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #FFFFFF;
+            border-radius: 12px;
+            font-size: 14px;
+            background: transparent;
+            color: #FFFFFF;
+            transition: all 0.3s;
+            box-sizing: border-box;
+            font-family: "Noto Sans SC", "Source Han Sans CN", "Microsoft YaHei", sans-serif;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .form-group .optional {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-left: 8px;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #FFFFFF;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: "Noto Sans SC", "Source Han Sans CN", "Microsoft YaHei", sans-serif;
+        }
+
+        .btn-primary {
+            background: rgba(255, 255, 255, 0.2);
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #FFFFFF;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 14px;
+            width: auto;
+        }
+
+        /* 用户信息面板 */
+        .user-info {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .user-info h3 {
+            margin-top: 0;
+            color: #FFFFFF;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .user-info .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .user-info .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .user-info .label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+
+        .user-info .value {
+            font-weight: 600;
+            color: #FFFFFF;
+            font-size: 14px;
+        }
+
+        .level-badge {
+            background: rgba(255, 255, 255, 0.2);
+            color: #FFFFFF;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .exp-bar-container {
+            margin-top: 8px;
+        }
+
+        .exp-bar {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .exp-fill {
+            height: 100%;
+            background: rgba(255, 255, 255, 0.6);
+            transition: width 0.5s ease;
+        }
+
+        /* 可编辑标语样式 */
+        .slogan-edit-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            justify-content: flex-end;
+        }
+
+        .slogan-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 2px solid #FFFFFF;
+            border-radius: 8px;
+            font-size: 14px;
+            background: transparent;
+            color: #FFFFFF;
+            font-family: "Noto Sans SC", "Source Han Sans CN", "Microsoft YaHei", sans-serif;
+        }
+
+        .slogan-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+        }
+
+        .slogan-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .edit-btn, .save-btn, .cancel-btn {
+            padding: 6px 14px;
+            border: 2px solid #FFFFFF;
+            border-radius: 8px;
+            background: transparent;
+            color: #FFFFFF;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+            font-family: "Noto Sans SC", "Source Han Sans CN", "Microsoft YaHei", sans-serif;
+        }
+
+        .edit-btn:hover, .save-btn:hover, .cancel-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="account-container">
+        <a href="index.html" class="nav-back">← 返回首页</a>
+        
+        <div id="message" class="message"></div>
+
+        <!-- 未登录状态 - 显示登录/注册表单 -->
+        <div id="authForms" style="display: block;">
+            <div class="account-tabs">
+                <button class="tab active" id="loginTab">登录</button>
+                <button class="tab" id="registerTab">注册</button>
+            </div>
+
+            <!-- 登录表单 -->
+            <div id="loginForm">
+                <div class="form-group">
+                    <label>账号</label>
+                    <input type="text" id="loginUsername" placeholder="请输入账号">
+                </div>
+                <div class="form-group">
+                    <label>密码</label>
+                    <input type="password" id="loginPassword" placeholder="请输入密码">
+                </div>
+                <button class="btn btn-primary" id="loginBtn">登录</button>
+            </div>
+
+            <!-- 注册表单 -->
+            <div id="registerForm" style="display: none;">
+                <div class="form-group">
+                    <label>账号</label>
+                    <input type="text" id="regUsername" placeholder="3-20个字符">
+                </div>
+                <div class="form-group">
+                    <label>密码</label>
+                    <input type="password" id="regPassword" placeholder="至少6位">
+                </div>
+                <div class="form-group">
+                    <label>昵称</label>
+                    <input type="text" id="regNickname" placeholder="您的游戏昵称">
+                </div>
+                <div class="form-group">
+                    <label>默认标语<span class="optional">(选填)</span></label>
+                    <input type="text" id="regSlogan" placeholder="分享游戏时的默认标语">
+                </div>
+                <button class="btn btn-primary" id="registerBtn">注册</button>
+            </div>
+        </div>
+
+        <!-- 已登录状态 - 显示用户信息 -->
+        <div id="userPanel" style="display: none;">
+            <div class="user-info">
+                <h3>用户信息</h3>
+                <div class="info-row">
+                    <span class="label">昵称</span>
+                    <span class="value" id="userNickname"></span>
+                </div>
+                <div class="info-row">
+                    <span class="label">等级</span>
+                    <span class="value level-badge" id="userLevel"></span>
+                </div>
+                <div class="info-row">
+                    <span class="label">EXP</span>
+                    <span class="value" id="userExp"></span>
+                </div>
+                <div class="info-row">
+                    <span class="label">下一级还需</span>
+                    <span class="value" id="expToNext"></span>
+                </div>
+                <div class="exp-bar-container">
+                    <div class="exp-bar">
+                        <div class="exp-fill" id="expBar"></div>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <span class="label">完成游戏</span>
+                    <span class="value" id="completedGames"></span>
+                </div>
+                <div class="info-row">
+                    <span class="label">默认标语</span>
+                    <div class="slogan-edit-container" id="sloganContainer">
+                        <span id="userSlogan" class="slogan-text"></span>
+                        <button class="edit-btn" id="editSloganBtn">编辑</button>
+                        <!-- 编辑模式控件 -->
+                        <input type="text" id="sloganInput" class="slogan-input" placeholder="输入新的默认标语" style="display: none;">
+                        <button class="save-btn" id="saveSloganBtn" style="display: none;">保存</button>
+                        <button class="cancel-btn" id="cancelSloganBtn" style="display: none;">取消</button>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn btn-secondary" id="logoutBtn">退出登录</button>
+        </div>
+    </div>
+
+    <script src="public/js/user.js"></script>
+    <script src="public/js/settings-menu.js"></script>
+    <script src="public/js/audio-manager.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            UserManager.init();
+            
+            // 标签切换
+            document.getElementById('loginTab').addEventListener('click', function() {
+                document.getElementById('loginTab').classList.add('active');
+                document.getElementById('registerTab').classList.remove('active');
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('registerForm').style.display = 'none';
+            });
+
+            document.getElementById('registerTab').addEventListener('click', function() {
+                document.getElementById('registerTab').classList.add('active');
+                document.getElementById('loginTab').classList.remove('active');
+                document.getElementById('registerForm').style.display = 'block';
+                document.getElementById('loginForm').style.display = 'none';
+            });
+
+            // 登录
+            document.getElementById('loginBtn').addEventListener('click', function() {
+                const username = document.getElementById('loginUsername').value;
+                const password = document.getElementById('loginPassword').value;
+                
+                const result = UserManager.login(username, password);
+                showMessage(result.message, result.success);
+                
+                if (result.success) {
+                    setTimeout(() => {
+                        showUserPanel();
+                    }, 1000);
+                }
+            });
+
+            // 注册
+            document.getElementById('registerBtn').addEventListener('click', function() {
+                const username = document.getElementById('regUsername').value;
+                const password = document.getElementById('regPassword').value;
+                const nickname = document.getElementById('regNickname').value;
+                const slogan = document.getElementById('regSlogan').value;
+                
+                const result = UserManager.register(username, password, nickname, slogan);
+                showMessage(result.message, result.success);
+                
+                if (result.success) {
+                    setTimeout(() => {
+                        // 注册成功后自动登录
+                        UserManager.login(username, password);
+                        showUserPanel();
+                    }, 1000);
+                }
+            });
+
+            // 退出登录
+            document.getElementById('logoutBtn').addEventListener('click', function() {
+                UserManager.logout();
+                showAuthForms();
+                showMessage('已退出登录', true);
+            });
+
+            // 编辑标语
+            document.getElementById('editSloganBtn').addEventListener('click', function() {
+                const user = UserManager.getUser();
+                document.getElementById('sloganInput').value = user.defaultSlogan || '';
+                // 隐藏显示模式控件
+                document.getElementById('userSlogan').style.display = 'none';
+                document.getElementById('editSloganBtn').style.display = 'none';
+                // 显示编辑模式控件
+                document.getElementById('sloganInput').style.display = 'block';
+                document.getElementById('saveSloganBtn').style.display = 'block';
+                document.getElementById('cancelSloganBtn').style.display = 'block';
+                // 聚焦输入框
+                document.getElementById('sloganInput').focus();
+            });
+
+            // 保存标语
+            document.getElementById('saveSloganBtn').addEventListener('click', function() {
+                const newSlogan = document.getElementById('sloganInput').value;
+                const result = UserManager.updateDefaultSlogan(newSlogan);
+                
+                if (result) {
+                    showMessage('标语更新成功', true);
+                    document.getElementById('userSlogan').textContent = newSlogan || '未设置';
+                } else {
+                    showMessage('更新失败，请重试', false);
+                }
+                
+                // 切换回显示模式
+                exitEditMode();
+            });
+
+            // 取消编辑标语
+            document.getElementById('cancelSloganBtn').addEventListener('click', function() {
+                exitEditMode();
+            });
+            
+            // 按ESC键取消编辑
+            document.getElementById('sloganInput').addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    exitEditMode();
+                }
+            });
+
+            // 检查登录状态
+            if (UserManager.isLoggedIn()) {
+                showUserPanel();
+            }
+        });
+
+        function showMessage(message, success) {
+            const msg = document.getElementById('message');
+            msg.textContent = message;
+            msg.className = 'message ' + (success ? 'success' : 'error');
+            
+            setTimeout(() => {
+                msg.classList.remove('success', 'error');
+            }, 3000);
+        }
+        
+        // 退出编辑模式
+        function exitEditMode() {
+            // 隐藏编辑模式控件
+            document.getElementById('sloganInput').style.display = 'none';
+            document.getElementById('saveSloganBtn').style.display = 'none';
+            document.getElementById('cancelSloganBtn').style.display = 'none';
+            // 显示显示模式控件
+            document.getElementById('userSlogan').style.display = 'inline';
+            document.getElementById('editSloganBtn').style.display = 'block';
+        }
+
+        function showUserPanel() {
+            document.getElementById('authForms').style.display = 'none';
+            document.getElementById('userPanel').style.display = 'block';
+            
+            const user = UserManager.getUser();
+            document.getElementById('userNickname').textContent = user.nickname;
+            document.getElementById('userLevel').textContent = user.levelName;
+            document.getElementById('userExp').textContent = user.exp + ' EXP';
+            
+            const expToNext = UserManager.getExpToNextLevel();
+            document.getElementById('expToNext').textContent = expToNext + ' EXP';
+            
+            // 更新进度条
+            const currentLevelExp = UserManager.getCurrentLevelExp(user.level);
+            const nextLevelExp = UserManager.getCurrentLevelExp(user.level + 1);
+            const progress = ((user.exp - currentLevelExp) / (nextLevelExp - currentLevelExp)) * 100;
+            document.getElementById('expBar').style.width = Math.min(progress, 100) + '%';
+            
+            document.getElementById('completedGames').textContent = user.totalGames + ' 局';
+            document.getElementById('userSlogan').textContent = user.defaultSlogan || '未设置';
+        }
+
+        function showAuthForms() {
+            document.getElementById('userPanel').style.display = 'none';
+            document.getElementById('authForms').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

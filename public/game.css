@@ -1,0 +1,840 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif;
+    background: var(--theme-gradient, linear-gradient(180deg, #FFA726 0%, #FF7043 100%));
+    min-height: 100vh;
+    color: #fff;
+}
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 18px;
+    border-bottom: 0.6px solid rgba(255,255,255,0.3);
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo {
+    width: 36px;
+    height: 36px;
+}
+
+.nav-tabs {
+    display: flex;
+    gap: 6px;
+}
+
+.nav-tabs .tab {
+    padding: 4.8px 18px;
+    border: 1.8px solid #fff;
+    background: transparent;
+    color: #fff;
+    border-radius: 3px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.nav-tabs .tab.active {
+    background: rgba(255,255,255,0.24);
+}
+
+.header-icons {
+    display: flex;
+    gap: 12px;
+}
+
+.header-icons img {
+    width: 17px;
+    height: 17px;
+}
+
+.game-main {
+    padding: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* 难度和计时器容器 */
+.difficulty-timer-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+/* 难度按钮样式 */
+.difficulty-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 20px;
+    border: 2.5px solid #fff;
+    background: transparent;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s;
+}
+
+.difficulty-btn:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.difficulty-text {
+    font-size: 16px;
+}
+
+.difficulty-stars {
+    font-size: 18px;
+}
+
+/* 计时器样式 */
+.timer-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: 2.5px solid #fff;
+    background: transparent;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 16px;
+    font-family: inherit;
+    cursor: pointer;
+    height: 44px;
+    box-sizing: border-box;
+}
+
+.timer-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.timer-time {
+    font-weight: bold;
+    font-size: 18px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* 音乐控制按钮样式 */
+.music-control-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2.5px solid #fff;
+    background: transparent;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 48px;
+    height: 44px;
+    box-sizing: border-box;
+    padding: 0;
+}
+
+.music-control-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.music-control-btn:active {
+    transform: scale(0.95);
+}
+
+.music-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.music-control-btn.playing .music-icon {
+    opacity: 1;
+}
+
+.music-control-btn.paused .music-icon {
+    opacity: 0.6;
+}
+
+/* 计时器暂停状态 */
+.timer-display.paused {
+    opacity: 0.7;
+}
+
+.pause-icon {
+    font-size: 16px;
+}
+
+.game-content {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+/* 数独网格 - 参考棋盘.svg */
+.sudoku-grid {
+    display: flex;
+    justify-content: center;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(9, 40px);
+    grid-template-rows: repeat(9, 40px);
+    border: 2.5px solid #fff;
+    background: transparent;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid rgba(255,255,255,0.25);
+    font-size: 27px;
+    font-weight: bold;
+    cursor: pointer;
+    color: rgba(255,255,255,0.6);
+    background: transparent;
+    transition: background 0.2s;
+    font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif;
+}
+
+.cell:hover {
+    background: rgba(255,255,255,0.15);
+}
+
+.cell.thick-right {
+    border-right: 2px solid rgba(255,255,255,0.5);
+}
+
+.cell.thick-bottom {
+    border-bottom: 2px solid rgba(255,255,255,0.5);
+}
+
+.cell.fixed {
+    color: #fff;
+    font-weight: bold;
+}
+
+.cell.user-input {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.cell.error {
+    color: rgba(231,76,60,1);
+}
+
+.cell.selected {
+    background: rgba(255,255,255,0.35);
+}
+
+.cell.highlight-row,
+.cell.highlight-col,
+.cell.highlight-box {
+    background: rgba(255,255,255,0.25);
+}
+
+.cell.highlight-num {
+    background: rgba(255,255,255,0.25);
+}
+
+/* 控制面板 - 参考数字按键.svg */
+.control-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: auto;
+}
+
+.action-btns-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 175px;
+}
+
+.action-btn {
+    border: 2.5px solid #fff;
+    background: transparent;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: inherit;
+    text-align: center;
+}
+
+.action-btn:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.new-game-btn {
+    width: 174px;
+    height: 50px;
+    font-size: 12px;
+}
+
+.num-pad {
+    display: grid;
+    grid-template-columns: repeat(3, 50px);
+    grid-template-rows: repeat(3, 50px);
+    gap: 12px;
+}
+
+.num-btn {
+    width: 50px;
+    height: 50px;
+    border: 2.5px solid #fff;
+    background: transparent;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    font-family: inherit;
+}
+
+.num-btn:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.num-btn.active,
+.num-btn.selected {
+    background: rgba(255,255,255,0.24);
+}
+
+.num-btn .count {
+    position: absolute;
+    bottom: 2px;
+    right: 5px;
+    font-size: 7px;
+    opacity: 0.8;
+}
+
+.cell .note {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    width: 100%;
+    height: 100%;
+    font-size: 9px;
+    color: #fff;
+    font-weight: normal;
+}
+
+.cell .note span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 笔记数字默认不透明度 */
+.cell .note span {
+    opacity: 0.3;
+}
+
+/* 激活数字的笔记高亮样式 */
+.cell.note-highlight .note span {
+    opacity: 1;
+}
+
+/* 笔记模式样式 */
+.note-btn.note-mode {
+    background: rgba(255,255,255,0.24);
+}
+
+.num-btn.note-mode {
+    background: rgba(255,255,255,0.24);
+    border: none;
+}
+
+.num-btn.note-mode.selected {
+    background: rgba(255,255,255,0.1);
+    border: 2.5px solid #fff;
+}
+
+/* 数字完成动画 */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.num-btn.completed {
+    animation: pulse 0.5s ease-out;
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.num-btn.completed .count {
+    display: none;
+}
+
+.cell.completed {
+    animation: pulse 0.5s ease-out;
+}
+
+.action-btns {
+    display: flex;
+    gap: 12px;
+}
+
+.action-btns .left-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.action-btns .right-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.action-btns .action-btn.wide {
+    width: 112px;
+    height: 50px;
+    font-size: 12px;
+}
+
+.action-btns .action-btn.square {
+    width: 50px;
+    height: 50px;
+    font-size: 12px;
+}
+
+/* 评论区 */
+.comment-section {
+    margin-top: 24px;
+    padding: 12px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 6px;
+}
+
+.comment-section h3 {
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.comment-item {
+    margin-bottom: 9px;
+    padding-bottom: 9px;
+    border-bottom: 0.6px solid rgba(255,255,255,0.2);
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 3px;
+    font-size: 8.4px;
+    opacity: 0.8;
+}
+
+.comment-content {
+    font-size: 10px;
+}
+
+.comment-input {
+    display: flex;
+    gap: 6px;
+    margin-top: 9px;
+}
+
+.input-field {
+    flex: 1;
+    padding: 7.2px;
+    border: 1.2px solid #fff;
+    border-radius: 4.8px;
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+    font-size: 10px;
+    font-family: inherit;
+}
+
+.input-field::placeholder {
+    color: rgba(255,255,255,0.6);
+}
+
+.send-btn {
+    padding: 7.2px 18px;
+    border: 1.2px solid #fff;
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+    border-radius: 4.8px;
+    font-size: 10px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.send-btn:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: "Noto Sans SC", "Source Han Sans CN", "Microsoft YaHei", sans-serif;
+    margin-top: 40px;
+}
+
+.new-game-dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+.new-game-dialog-content {
+    position: relative;
+    background: var(--theme-gradient, linear-gradient(135deg, #FFA726 0%, #FF7043 100%));
+    padding: 28px 28px 24px;
+    border-radius: 16px;
+    text-align: center;
+    min-width: 340px;
+    max-width: 420px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.new-game-dialog-content h3 {
+    margin-bottom: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.new-game-dialog-content p {
+    margin-bottom: 18px;
+    opacity: 0.85;
+    font-size: 13px;
+    color: #fff;
+}
+
+/* 关闭按钮（右上角X） */
+.dialog-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 28px;
+    height: 28px;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 300;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+    opacity: 0.7;
+    line-height: 1;
+}
+
+.dialog-close-btn:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.15);
+    transform: rotate(90deg);
+}
+
+.dialog-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 4px;
+}
+
+.dialog-btn {
+    padding: 10px 24px;
+    border: 1.5px solid #fff;
+    border-radius: 8px;
+    background: transparent;
+    color: #fff;
+    font-family: "Noto Sans SC", "Source Han Sans CN", "Microsoft YaHei", sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-width: 90px;
+}
+
+.dialog-btn:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+/* 主按钮：稍粗字体+实色背景，视觉重点 */
+.dialog-btn-primary {
+    border: 1.5px solid #fff;
+    font-size: 15px;
+    font-weight: 600;
+    background: #fff;
+    color: #333;
+}
+
+.dialog-btn-primary:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* 次要按钮：实色边框细线 */
+.dialog-btn-secondary {
+    border: 1.5px solid #fff;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* 取消按钮：样式已废弃，由右上角X替代 */
+.dialog-btn-cancel {
+    display: none;
+}
+
+/* 标语输入框样式 */
+.slogan-input-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.slogan-input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.3s;
+    font-family: "Noto Sans SC", "Source Han Sans CN", "Microsoft YaHei", sans-serif;
+}
+
+.slogan-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.slogan-input:focus {
+    border-color: #fff;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* 随机生成按钮样式 */
+.random-btn {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.random-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: #fff;
+}
+
+.random-btn svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+@media (max-width: 768px) {
+    .game-content {
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .grid-container {
+        grid-template-columns: repeat(9, 40px);
+        grid-template-rows: repeat(9, 40px);
+    }
+
+    .cell {
+        font-size: 20px;
+    }
+
+    .control-panel {
+        width: 100%;
+        max-width: 360px;
+        margin-top: 20px;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 20px 0;
+        overflow: hidden;
+        box-sizing: border-box;
+    }
+
+    .action-btns-wrapper {
+        display: flex;
+        flex-direction: row;
+        gap: 12px;
+        width: auto;
+    }
+
+    .new-game-btn {
+        width: 50px;
+        height: 174px;
+        font-size: 10px;
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .num-pad {
+        grid-template-columns: repeat(3, 50px);
+        grid-template-rows: repeat(3, 50px);
+        gap: 12px;
+    }
+
+    .num-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+
+    .num-btn .count {
+        font-size: 6px;
+    }
+
+    .action-btns {
+        display: flex;
+        flex-direction: row;
+        gap: 12px;
+    }
+
+    .action-btns .left-group {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .action-btns .right-group {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .action-btns .action-btn.wide {
+        width: 50px;
+        height: 112px;
+        font-size: 10px;
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .action-btns .action-btn.wide#undoBtn {
+        width: 50px;
+        height: 50px;
+    }
+
+    .action-btns .action-btn.square {
+        width: 50px;
+        height: 50px;
+        font-size: 10px;
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .action-btns .action-btn.square#clearBtn {
+        width: 50px;
+        height: 112px;
+    }
+
+    .comment-section {
+        padding: 10px;
+    }
+
+    .comment-section h3 {
+        font-size: 12px;
+    }
+
+    .comment-header {
+        font-size: 7px;
+    }
+
+    .comment-content {
+        font-size: 9px;
+    }
+
+    .input-field {
+        font-size: 9px;
+        padding: 6px;
+    }
+
+    .send-btn {
+        font-size: 9px;
+        padding: 6px 12px;
+    }
+}

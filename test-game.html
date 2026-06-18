@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试 - 共创乐园游戏</title>
+    <style>
+        body {
+            background: linear-gradient(180deg, #FFA726 0%, #FF7043 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .test-content {
+            background: rgba(255,255,255,0.9);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 1px;
+            background: #333;
+            padding: 2px;
+            border-radius: 4px;
+            width: 360px;
+            height: 360px;
+            margin: 20px auto;
+        }
+        .cell {
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .cell.thick-right { border-right: 2.5px solid rgba(0,0,0,0.5); }
+        .cell.thick-bottom { border-bottom: 2.5px solid rgba(0,0,0,0.5); }
+        .num-pad {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 5px;
+            max-width: 360px;
+            margin: 20px auto;
+        }
+        .num-btn {
+            padding: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            background: #FF7043;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .num-btn.selected {
+            background: #E64A19;
+        }
+        .btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+        }
+        .log {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-content">
+        <h2>测试：共创乐园游戏</h2>
+        
+        <div class="grid-container" id="gridContainer"></div>
+        
+        <div class="num-pad" id="numberPad"></div>
+        
+        <div style="text-align: center;">
+            <button class="btn" onclick="testLoadGame()">加载测试游戏</button>
+            <button class="btn" onclick="clearLocalStorage()">清除localStorage</button>
+        </div>
+        
+        <div class="log" id="log"></div>
+    </div>
+
+    <script>
+        let currentPuzzle = [];
+        let selectedNumber = null;
+
+        function log(msg) {
+            const logEl = document.getElementById('log');
+            logEl.innerHTML += '<br>' + new Date().toLocaleTimeString() + ': ' + msg;
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        function testLoadGame() {
+            log('开始加载游戏...');
+            
+            const testGame = {
+                id: '1',
+                puzzle: '530070000600195000098000060800060003400803001700020006060000280000419005000080079',
+                solution: '534678912672195348198342567859761423426853791713924856961537284287419635345286179',
+                playerPuzzle: '530070000600195000098000060800060003400803001700020006060000280000419005000080079',
+                difficulty: 'hard'
+            };
+
+            localStorage.setItem('sharedGame', JSON.stringify(testGame));
+            log('游戏数据已保存到localStorage');
+            
+            loadGame(testGame);
+        }
+
+        function loadGame(game) {
+            log('解析棋盘数据...');
+            currentPuzzle = game.playerPuzzle.split('').map(Number);
+            log('棋盘长度: ' + currentPuzzle.length);
+            
+            renderBoard();
+            initNumberPad();
+            
+            log('游戏加载完成！');
+        }
+
+        function renderBoard() {
+            const container = document.getElementById('gridContainer');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < 81; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                
+                // 添加粗线
+                if ((i + 1) % 3 === 0 && (i + 1) % 9 !== 0) {
+                    cell.classList.add('thick-right');
+                }
+                if (i >= 18 && i < 27 || i >= 45 && i < 54) {
+                    cell.classList.add('thick-bottom');
+                }
+                
+                const value = currentPuzzle[i];
+                if (value !== 0) {
+                    cell.textContent = value;
+                }
+                
+                cell.addEventListener('click', () => handleCellClick(i));
+                container.appendChild(cell);
+            }
+        }
+
+        function initNumberPad() {
+            const container = document.getElementById('numberPad');
+            container.innerHTML = '';
+            
+            for (let i = 1; i <= 9; i++) {
+                const btn = document.createElement('button');
+                btn.classList.add('num-btn');
+                btn.textContent = i;
+                btn.addEventListener('click', () => selectNumber(i));
+                container.appendChild(btn);
+            }
+        }
+
+        function selectNumber(num) {
+            selectedNumber = num;
+            log('选择数字: ' + num);
+            
+            document.querySelectorAll('.num-btn').forEach(btn => btn.classList.remove('selected'));
+            document.querySelector('.num-btn:nth-child(' + num + ')').classList.add('selected');
+        }
+
+        function handleCellClick(index) {
+            if (selectedNumber !== null) {
+                log('填入数字 ' + selectedNumber + ' 到位置 ' + index);
+                currentPuzzle[index] = selectedNumber;
+                renderBoard();
+            }
+        }
+
+        function clearLocalStorage() {
+            localStorage.removeItem('sharedGame');
+            log('localStorage已清除');
+        }
+
+        // 页面加载时检查是否有游戏数据
+        document.addEventListener('DOMContentLoaded', () => {
+            log('页面加载完成');
+            
+            const savedGame = localStorage.getItem('sharedGame');
+            if (savedGame) {
+                log('检测到保存的游戏数据');
+                try {
+                    const game = JSON.parse(savedGame);
+                    log('游戏数据解析成功');
+                    loadGame(game);
+                } catch (e) {
+                    log('游戏数据解析失败: ' + e.message);
+                }
+            } else {
+                log('未检测到保存的游戏数据，请点击"加载测试游戏"');
+            }
+        });
+    </script>
+</body>
+</html>

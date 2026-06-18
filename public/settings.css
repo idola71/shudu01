@@ -1,0 +1,130 @@
+/* 设置菜单样式 */
+.settings-menu {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.settings-menu.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.settings-menu-content {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 16px;
+    min-width: 240px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.settings-title {
+    color: #333;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+/* 音频控制区域 */
+.audio-section {
+    margin-bottom: 0;
+}
+
+.sound-section {
+    margin-bottom: 0;
+}
+
+.volume-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+}
+
+.volume-control span {
+    font-size: 14px;
+    color: #333;
+    min-width: 60px;
+}
+
+.volume-control input[type="range"] {
+    flex: 1;
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+.volume-control input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background: #FFA726;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.volume-control input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+.menu-divider {
+    height: 1px;
+    background: rgba(0, 0, 0, 0.1);
+    margin: 12px 0;
+}
+
+/* 主题列表 - 两列布局 */
+.theme-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.theme-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    text-align: left;
+}
+
+.theme-item:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.theme-item.selected {
+    background: rgba(255, 167, 38, 0.1);
+    border: 1px solid rgba(255, 167, 38, 0.3);
+}
+
+.color-preview {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.theme-name {
+    color: #333;
+    font-size: 13px;
+    font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif;
+}
+
+/* CSS变量定义 */
+:root {
+    --theme-primary: #FFA726;
+    --theme-secondary: #FF7043;
+    --theme-gradient: linear-gradient(135deg, #FFA726 0%, #FF7043 100%);
+}

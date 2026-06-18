@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>共创乐园 - 数独共创乐园</title>
+    <script>
+        // 在页面加载前设置主题，避免闪烁
+        (function() {
+            const savedTheme = localStorage.getItem('currentTheme') || 'orange';
+            const themes = {
+                orange: 'linear-gradient(180deg, #FFA726 0%, #FF7043 100%)',
+                blue: 'linear-gradient(180deg, #1E88E5 0%, #1565C0 100%)',
+                purple: 'linear-gradient(180deg, #7E57C2 0%, #5E35B1 100%)',
+                green: 'linear-gradient(180deg, #43A047 0%, #2E7D32 100%)',
+                pink: 'linear-gradient(180deg, #EC407A 0%, #D81B60 100%)',
+                cyan: 'linear-gradient(180deg, #00ACC1 0%, #00838F 100%)',
+                dark: 'linear-gradient(180deg, #1a1a2e 0%, #16213e 100%)'
+            };
+            document.documentElement.style.setProperty('--theme-gradient', themes[savedTheme] || themes.orange);
+        })();
+    </script>
+    <link rel="stylesheet" href="public/paradise.css">
+    <link rel="stylesheet" href="public/settings.css">
+    <link rel="stylesheet" href="public/message-popup.css">
+</head>
+<body>
+    <header class="game-header">
+        <div class="logo-section">
+            <img src="public/images/网站logo.svg" alt="数独共创乐园" class="logo">
+            <nav class="nav-tabs">
+                <button class="tab" onclick="window.location.href='game.html'">趣味数独</button>
+                <button class="tab active">共创乐园</button>
+            </nav>
+        </div>
+
+        <div class="header-icons">
+            <a href="index.html"><img src="public/images/主页图标.svg" alt="首页"></a>
+            <a href="account.html" data-action="account"><img src="public/images/账号图标.svg" alt="账号"></a>
+            <a href="#" id="messageBtn" style="position: relative;"><img src="public/images/消息图标.svg" alt="消息"><span id="messageBadge"></span></a>
+            <a href="#" onclick="event.preventDefault(); event.stopPropagation(); toggleSettingsMenu(this);"><img src="public/images/设置图标.svg" alt="设置"></a>
+        </div>
+    </header>
+
+    <main class="paradise-main">
+        <div class="section-header">
+            <div>
+                <h2>玩家分享的游戏</h2>
+                <p>探索其他玩家创建的精彩数独挑战</p>
+            </div>
+            <button class="custom-game-btn" onclick="createCustomGame()">自定义游戏</button>
+        </div>
+
+        <!-- 筛选和搜索区域 -->
+        <div class="filter-section">
+            <!-- 搜索框 -->
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="搜索昵称或游戏编号..." class="search-input">
+                <button class="search-btn" onclick="searchGames()"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button>
+            </div>
+
+            <!-- 筛选选项 -->
+            <div class="filter-options">
+                <select id="filterSelect" class="filter-select" onchange="filterGames()">
+                    <option value="all">所有游戏</option>
+                    <option value="mine">我分享的游戏</option>
+                    <option value="others">其他玩家的游戏</option>
+                </select>
+
+                <select id="sortSelect" class="filter-select" onchange="sortGames()">
+                    <option value="newest">最新分享</option>
+                    <option value="oldest">最早分享</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="game-grid" id="gameGrid">
+            <!-- 游戏卡片将通过JavaScript动态生成 -->
+        </div>
+
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <img src="public/images/网站logo.svg" alt="暂无分享" class="empty-icon">
+            <p>暂无玩家分享的游戏</p>
+            <button class="empty-btn" onclick="window.location.href='game.html'">去创建你的第一个游戏</button>
+        </div>
+    </main>
+
+    <footer>
+        数独共创乐园@王板凳
+    </footer>
+
+    <script src="public/js/user.js"></script>
+    <script src="public/js/user-menu.js"></script>
+    <script type="module" src="public/js/paradise.js"></script>
+    <script src="public/js/settings-menu.js"></script>
+    <script src="public/js/audio-manager.js"></script>
+    <script src="public/js/message-popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,427 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif;
+    background: var(--theme-gradient, linear-gradient(180deg, #FFA726 0%, #FF7043 100%));
+    min-height: 100vh;
+    color: #fff;
+}
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 18px;
+    border-bottom: 0.6px solid rgba(255,255,255,0.3);
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo {
+    width: 36px;
+    height: 36px;
+}
+
+.nav-tabs {
+    display: flex;
+    gap: 6px;
+}
+
+.nav-tabs .tab {
+    padding: 4.8px 18px;
+    border: 1.8px solid #fff;
+    background: transparent;
+    color: #fff;
+    border-radius: 3px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.nav-tabs .tab.active {
+    background: rgba(255,255,255,0.24);
+}
+
+.header-icons {
+    display: flex;
+    gap: 12px;
+}
+
+.header-icons img {
+    width: 17px;
+    height: 17px;
+}
+
+.paradise-main {
+    padding: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* 标题区域 */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.section-header h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.custom-game-btn {
+    padding: 8px 20px;
+    border: 2.5px solid #fff;
+    background: transparent;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s;
+}
+
+.custom-game-btn:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+/* 搜索和筛选区域 */
+.filter-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    padding: 0 12px;
+}
+
+.search-box img {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+}
+
+.search-btn {
+    background: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 8px;
+}
+
+.search-box input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    padding: 8px 12px;
+    font-size: 14px;
+    width: 200px;
+}
+
+.search-box input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.filter-select {
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: inherit;
+    outline: none;
+}
+
+.filter-select option {
+    background: #FF7043;
+    color: #fff;
+}
+
+/* 游戏网格 */
+.game-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+/* 游戏卡片 */
+.game-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+
+/* 取消分享按钮 */
+.cancel-share-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 22px;
+    height: 22px;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    font-size: 18px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    z-index: 10;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.cancel-share-btn:hover {
+    background: transparent;
+    transform: scale(1.1);
+    color: #ff5252;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+}
+
+.cancel-share-btn:active {
+    transform: scale(0.95);
+}
+
+.game-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.card-thumbnail {
+    padding: 16px;
+    display: flex;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.2);
+    flex-shrink: 0;
+}
+
+.card-main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.card-leaderboard {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 80px;
+}
+
+.leaderboard-header {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.leaderboard-top {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.top-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.top-rank {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: bold;
+    color: white;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.top-item:first-child .top-rank {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+}
+
+.top-item:nth-child(2) .top-rank {
+    background: linear-gradient(135deg, #C0C0C0, #A8A8A8);
+}
+
+.top-item:nth-child(3) .top-rank {
+    background: linear-gradient(135deg, #CD7F32, #B87333);
+}
+
+.top-time {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.9);
+    font-family: 'Courier New', monospace;
+}
+
+.thumbnail-grid {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 0.5px;
+    width: 120px;
+    height: 120px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 2px;
+    border-radius: 4px;
+}
+
+.thumbnail-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 8px;
+    color: rgba(255, 255, 255, 0.5);
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.thumbnail-cell.fixed {
+    color: #fff;
+    font-weight: bold;
+}
+
+.card-content {
+    padding: 16px;
+}
+
+.difficulty-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.difficulty-badge.easy {
+    background: rgba(76, 175, 80, 0.8);
+}
+
+.difficulty-badge.medium {
+    background: rgba(255, 193, 7, 0.8);
+}
+
+.difficulty-badge.hard {
+    background: rgba(244, 67, 54, 0.8);
+}
+
+.difficulty-badge.expert {
+    background: rgba(156, 39, 176, 0.8);
+}
+
+.card-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-game-code {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 8px;
+}
+
+.card-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.card-meta img {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+.card-meta span {
+    font-size: 14px;
+}
+
+.card-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.stat-icon {
+    width: 14px;
+    height: 14px;
+}
+
+/* 空状态 */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.empty-state img {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.empty-state h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.empty-state p {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: "Noto Sans SC", "Source Han Sans CN", "Microsoft YaHei", sans-serif;
+}
