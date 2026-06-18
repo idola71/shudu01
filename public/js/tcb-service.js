@@ -18,8 +18,12 @@ export async function initTCB() {
             region: tcbConfig.region
         });
         
-        await window.tcb.auth({ persistence: 'local' }).signInAnonymously();
-        console.log('TCB anonymous login successful');
+        try {
+            await window.tcb.auth({ persistence: 'local' }).signInAnonymously();
+            console.log('TCB anonymous login successful');
+        } catch (authError) {
+            console.warn('TCB anonymous login failed, trying without auth:', authError);
+        }
         
         db = window.tcb.database();
         initialized = true;
