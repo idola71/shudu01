@@ -787,7 +787,7 @@ function shareGame() {
     const confirmBtn = document.createElement('button');
     confirmBtn.textContent = '分享';
     confirmBtn.classList.add('dialog-btn', 'dialog-btn-primary');
-    confirmBtn.addEventListener('click', () => {
+    confirmBtn.addEventListener('click', async () => {
         const slogan = sloganInput.value.trim() || '未命名游戏';
 
         // 生成游戏编号
@@ -830,7 +830,7 @@ function shareGame() {
         })();
 
         // 发送站内信（使用游戏的 id 而不是 gameCode）
-        sendMessage(sharedGame.id);
+        await sendMessage(sharedGame.id);
 
         dialog.remove();
         alert(`分享成功！\n\n游戏已发布到共创乐园\n游戏编号：${gameId}\n\n站内信已发送`);
@@ -927,26 +927,55 @@ function generateGameId() {
 }
 
 // 发送站内信
-function sendMessage(gameId, type = 'system', title = '系统通知', content = '') {
+async function sendMessage(gameId, type = 'system', title = '系统通知', content = '') {
+    let userId = 'anonymous';
+    let nickname = '匿名用户';
+    
+    if (window.UserManager && UserManager.isLoggedIn()) {
+        const user = UserManager.getUser();
+        userId = user?.id || user?.username || 'anonymous';
+        nickname = user?.nickname || user?.username || '匿名用户';
+    }
+
+    const message = {
+        id: Date.now().toString(),
+        userId: userId,
+        nickname: nickname,
+        title: title || '系统通知',
+        content: content || `您分享的数独游戏已发布到共创乐园！游戏编号：${gameId}`,
+        time: new Date().toLocaleString('zh-CN'),
+        timestamp: Date.now(),
+        read: false,
+        type: type,
+        gameId: gameId,
+        participants: 0,
+        completed: 0
+    };
+
+    try {
+        const { initTCB, addMessage } = await import('./tcb-service.js');
+        await initTCB();
+        const tcbId = await addMessage(message);
+        if (tcbId) {
+            message._id = tcbId;
+        }
+        console.log('TCB: Message sent');
+    } catch (error) {
+        console.error('TCB sendMessage error:', error);
+    }
+
     const messages = JSON.parse(localStorage.getItem('messages') || '[]');
     
-    // 检查是否已存在相同类型和gameId的未读消息（避免重复发送）
     const exists = messages.some(m => 
         !m.read && m.gameId === gameId && m.type === type
     );
     
     if (!exists) {
-        messages.unshift({
-            id: Date.now().toString(),
-            title: title || '系统通知',
-            content: content || `您分享的数独游戏已发布到共创乐园！游戏编号：${gameId}`,
-            time: new Date().toLocaleString('zh-CN'),
-            read: false,
-            type: type,
-            gameId: gameId,
-            participants: 0,
-            completed: 0
-        });
+        messages.unshift(message);
         localStorage.setItem('messages', JSON.stringify(messages));
+    }
+    
+    if (window.messagePopup) {
+        window.messagePopup.loadMessages();
     }
 }

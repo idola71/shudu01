@@ -387,3 +387,16 @@ function sendMessage(gameId, type = 'share', title = '游戏分享成功', conte
         window.messagePopup.loadMessages();
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    window.messagePopup = new MessagePopup();
+    
+    const messageBtn = document.getElementById('messageBtn');
+    if (messageBtn) {
+        messageBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            window.messagePopup.show();
+        });
+    }
+});
