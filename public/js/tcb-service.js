@@ -32,6 +32,7 @@ export async function getSharedGames() {
         const result = await db.collection('sharedGames').orderBy('createdAt', 'desc').get();
         return result.data.map(doc => ({
             id: doc._id,
+            _id: doc._id,
             ...doc
         }));
     } catch (error) {

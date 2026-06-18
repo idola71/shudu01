@@ -54,6 +54,11 @@ function createCustomGame() {
     window.location.href = 'custom-editor.html';
 }
 
+window.createCustomGame = createCustomGame;
+window.searchGames = searchGames;
+window.filterGames = filterGames;
+window.sortGames = sortGames;
+
 function renderGameGrid() {
     const gameGrid = document.getElementById('gameGrid');
     const emptyState = document.getElementById('emptyState');
@@ -178,7 +183,9 @@ function formatTime(seconds) {
 }
 
 async function cancelShare(gameId) {
-    const success = await deleteSharedGame(gameId);
+    const game = allGames.find(g => g.id === gameId || g._id === gameId);
+    const tcbDocId = game?._id || gameId;
+    const success = await deleteSharedGame(tcbDocId);
     if (success) {
         await loadGames();
         alert('已取消分享');

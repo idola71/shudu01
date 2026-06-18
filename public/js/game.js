@@ -1610,8 +1610,16 @@ function shareToParadise() {
             try {
                 const { initTCB, addSharedGame } = await import('./tcb-service.js');
                 await initTCB();
-                await addSharedGame(sharedGame);
-                console.log('TCB: Game shared successfully');
+                const tcbId = await addSharedGame(sharedGame);
+                if (tcbId) {
+                    console.log('TCB: Game shared successfully with ID:', tcbId);
+                    const sharedGames = JSON.parse(localStorage.getItem('sharedGames') || '[]');
+                    const idx = sharedGames.findIndex(g => g.id === sharedGame.id);
+                    if (idx !== -1) {
+                        sharedGames[idx]._id = tcbId;
+                        localStorage.setItem('sharedGames', JSON.stringify(sharedGames));
+                    }
+                }
             } catch (error) {
                 console.error('TCB share error:', error);
             }

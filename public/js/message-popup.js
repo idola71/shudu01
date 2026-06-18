@@ -63,7 +63,7 @@ class MessagePopup {
         
         try {
             const { initTCB, getMessages } = await import('./tcb-service.js');
-        await initTCB();
+            await initTCB();
             
             let userId = 'anonymous';
             if (window.UserManager && UserManager.isLoggedIn()) {
@@ -73,11 +73,13 @@ class MessagePopup {
             
             messages = await getMessages(userId);
         } catch (error) {
-            console.error('LeanCloud loadMessages error:', error);
+            console.error('TCB loadMessages error:', error);
         }
         
         if (messages.length === 0) {
             messages = JSON.parse(localStorage.getItem('messages') || '[]');
+        } else {
+            localStorage.setItem('messages', JSON.stringify(messages));
         }
         
         this.messages = messages;
@@ -91,20 +93,22 @@ class MessagePopup {
         
         try {
             const { initTCB, getSharedGames } = await import('./tcb-service.js');
-        await initTCB();
+            await initTCB();
             sharedGames = await getSharedGames();
         } catch (error) {
-            console.error('LeanCloud updateSharedGameStats error:', error);
+            console.error('TCB updateSharedGameStats error:', error);
         }
         
         if (sharedGames.length === 0) {
             sharedGames = JSON.parse(localStorage.getItem('sharedGames') || '[]');
+        } else {
+            localStorage.setItem('sharedGames', JSON.stringify(sharedGames));
         }
         
         let hasUpdates = false;
         this.messages.forEach(msg => {
             if (msg.gameId) {
-                const game = sharedGames.find(g => g.id === msg.gameId);
+                const game = sharedGames.find(g => g.id === msg.gameId || g._id === msg.gameId);
                 if (game) {
                     if (msg.participants !== (game.participants || 0) || msg.completed !== (game.completed || 0)) {
                         msg.participants = game.participants || 0;
@@ -258,14 +262,17 @@ class MessagePopup {
     async deleteMessage(id) {
         try {
             const { initTCB, deleteMessage } = await import('./tcb-service.js');
-        await initTCB();
-            await deleteMessage(id);
-            console.log('LeanCloud: Message deleted:', id);
+            await initTCB();
+            
+            const msg = this.messages.find(m => m.id === id || m._id === id);
+            const tcbId = msg?._id || id;
+            await deleteMessage(tcbId);
+            console.log('TCB: Message deleted:', tcbId);
         } catch (error) {
-            console.error('LeanCloud deleteMessage error:', error);
+            console.error('TCB deleteMessage error:', error);
         }
 
-        this.messages = this.messages.filter(m => m.id !== id);
+        this.messages = this.messages.filter(m => m.id !== id && m._id !== id);
         localStorage.setItem('messages', JSON.stringify(this.messages));
         
         const totalPages = Math.ceil(this.messages.length / this.itemsPerPage);
@@ -355,11 +362,20 @@ function sendMessage(gameId, type = 'share', title = '游戏分享成功', conte
     (async function saveMessage() {
         try {
             const { initTCB, addMessage } = await import('./tcb-service.js');
-        await initTCB();
-        await addMessage(message);
-        console.log('TCB: Message sent');
+            await initTCB();
+            const tcbId = await addMessage(message);
+            if (tcbId) {
+                message._id = tcbId;
+                const messages = JSON.parse(localStorage.getItem('messages') || '[]');
+                const idx = messages.findIndex(m => m.id === message.id);
+                if (idx !== -1) {
+                    messages[idx]._id = tcbId;
+                    localStorage.setItem('messages', JSON.stringify(messages));
+                }
+            }
+            console.log('TCB: Message sent');
         } catch (error) {
-            console.error('LeanCloud sendMessage error:', error);
+            console.error('TCB sendMessage error:', error);
         }
     })();
 

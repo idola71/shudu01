@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initGame();
     initTimer();
     initMusicControl();
+    initLeaderboardBtn();
 });
 
 // 初始化游戏
@@ -66,6 +67,18 @@ function initMusicControl() {
         setInterval(() => {
             updateMusicButtonState();
         }, 500);
+    }
+}
+
+// 排行榜按钮初始化
+function initLeaderboardBtn() {
+    const leaderboardBtn = document.getElementById('leaderboardBtn');
+    if (leaderboardBtn) {
+        leaderboardBtn.addEventListener('click', () => {
+            if (typeof openLeaderboard === 'function') {
+                openLeaderboard();
+            }
+        });
     }
 }
 
@@ -172,17 +185,19 @@ async function updateParticipants(gameId) {
                 };
                 
                 localStorage.setItem('sharedGames', JSON.stringify(sharedGames));
-                await updateSharedGame(gameId, {
+                
+                const tcbDocId = game._id || game.id;
+                await updateSharedGame(tcbDocId, {
                     participants: game.participants,
                     playerRecords: game.playerRecords
                 });
-                console.log('LeanCloud: Participants updated for game:', gameId);
+                console.log('TCB: Participants updated for game:', tcbDocId);
             } else {
                 console.log('Player already participated:', userKey);
             }
         }
     } catch (error) {
-        console.error('LeanCloud updateParticipants error:', error);
+        console.error('TCB updateParticipants error:', error);
         
         const sharedGames = JSON.parse(localStorage.getItem('sharedGames') || '[]');
         const gameIndex = sharedGames.findIndex(g => g.id === gameId);
@@ -222,6 +237,7 @@ async function updateCompleted(gameId) {
         
         if (gameIndex !== -1) {
             const game = sharedGames[gameIndex];
+            const tcbDocId = game._id || game.id;
             
             if (!game.playerRecords) {
                 game.playerRecords = {};
@@ -240,11 +256,11 @@ async function updateCompleted(gameId) {
                 game.playerRecords[userKey].bestErrors = errorCount;
                 
                 localStorage.setItem('sharedGames', JSON.stringify(sharedGames));
-                await updateSharedGame(gameId, {
+                await updateSharedGame(tcbDocId, {
                     completed: game.completed,
                     playerRecords: game.playerRecords
                 });
-                console.log('LeanCloud: Completed count updated for game:', gameId);
+                console.log('TCB: Completed count updated for game:', tcbDocId);
             } else {
                 const currentRecord = game.playerRecords[userKey];
                 const isBetter = (errorCount < currentRecord.bestErrors) || 
@@ -255,13 +271,13 @@ async function updateCompleted(gameId) {
                     game.playerRecords[userKey].bestErrors = errorCount;
                     
                     localStorage.setItem('sharedGames', JSON.stringify(sharedGames));
-                    await updateSharedGame(gameId, { playerRecords: game.playerRecords });
-                    console.log('LeanCloud: Best record updated for player:', userKey);
+                    await updateSharedGame(tcbDocId, { playerRecords: game.playerRecords });
+                    console.log('TCB: Best record updated for player:', userKey);
                 }
             }
         }
     } catch (error) {
-        console.error('LeanCloud updateCompleted error:', error);
+        console.error('TCB updateCompleted error:', error);
         
         const sharedGames = JSON.parse(localStorage.getItem('sharedGames') || '[]');
         const gameIndex = sharedGames.findIndex(g => g.id === gameId);

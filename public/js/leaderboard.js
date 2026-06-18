@@ -97,7 +97,7 @@ async function loadLeaderboardData() {
             return;
         }
     } catch (error) {
-        console.error('LeanCloud loadLeaderboard error:', error);
+        console.error('TCB loadLeaderboard error:', error);
     }
     
     const data = getLeaderboardDataLocal();
@@ -155,9 +155,9 @@ async function addLeaderboardRecord(name, time, errors = 0) {
             errors: errors,
             date: new Date().toISOString()
         });
-        console.log('Leaderboard record added to LeanCloud');
+        console.log('Leaderboard record added to TCB');
     } catch (error) {
-        console.error('LeanCloud addLeaderboardRecord error:', error);
+        console.error('TCB addLeaderboardRecord error:', error);
     }
 
     const allLeaderboards = JSON.parse(localStorage.getItem('paradiseLeaderboards') || '{}');
