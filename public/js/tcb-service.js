@@ -7,14 +7,18 @@ export async function initTCB() {
     if (initialized && db) return db;
     
     try {
-        const { init, database } = await import('https://imgcache.qq.com/qcloud/tcbjs/1.6.3/tcb.js');
+        await loadTCBSDK();
         
-        init({
+        if (!window.tcb) {
+            throw new Error('TCB SDK not loaded');
+        }
+        
+        window.tcb.init({
             env: tcbConfig.env,
             region: tcbConfig.region
         });
         
-        db = database();
+        db = window.tcb.database();
         initialized = true;
         console.log('TCB initialized successfully');
         return db;
@@ -22,6 +26,21 @@ export async function initTCB() {
         console.error('TCB initialization failed:', error);
         return null;
     }
+}
+
+function loadTCBSDK() {
+    return new Promise((resolve, reject) => {
+        if (window.tcb) {
+            resolve();
+            return;
+        }
+        
+        const script = document.createElement('script');
+        script.src = 'https://imgcache.qq.com/qcloud/tcbjs/1.6.3/tcb.js';
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error('Failed to load TCB SDK'));
+        document.head.appendChild(script);
+    });
 }
 
 export async function getSharedGames() {
