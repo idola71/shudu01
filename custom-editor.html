@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>自定义游戏 - 编辑器</title>
+    <title>自定义游戏 - 趣味数独乐园</title>
     <script>
         // 在页面加载前设置主题，避免闪烁
         (function() {
@@ -23,14 +23,95 @@
     <link rel="stylesheet" href="game.css">
     <link rel="stylesheet" href="settings.css">
     <link rel="stylesheet" href="message-popup.css">
+    <style>
+        .code-input-section {
+            padding: 30px 20px 20px;
+            margin: 0;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            border: none;
+            background: transparent;
+            backdrop-filter: none;
+            border-radius: 0;
+        }
+
+        .code-input-header {
+            display: none;
+        }
+
+        .code-input-wrapper {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 0;
+            align-items: center;
+            background: transparent;
+            border-radius: 0;
+        }
+
+        .code-input {
+            flex: 1;
+            padding: 12px 0;
+            border: none;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 0;
+            font-size: 14px;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s;
+            font-family: "Noto Sans SC", "Source Han Sans CN", "Microsoft YaHei", sans-serif;
+            outline: none;
+        }
+
+        .code-input:focus {
+            outline: none;
+            border-bottom-color: #FFFFFF;
+            background: transparent;
+        }
+
+        .code-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .generate-btn {
+            padding: 10px 20px;
+            background: transparent;
+            color: #FFFFFF;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: "Noto Sans SC", "Source Han Sans CN", "Microsoft YaHei", sans-serif;
+            white-space: nowrap;
+        }
+
+        .generate-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #FFFFFF;
+        }
+
+        .generate-btn:active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .code-error {
+            color: #FFCDD2;
+            font-size: 13px;
+            text-align: center;
+            min-height: 18px;
+            padding-top: 8px;
+        }
+    </style>
 </head>
 <body>
     <header class="game-header">
         <div class="logo-section">
-            <img src="images/网站logo.svg" alt="数独共创乐园" class="logo">
+            <img src="images/网站logo.svg" alt="趣味数独乐园" class="logo">
             <nav class="nav-tabs">
                 <button class="tab" onclick="window.location.href='game.html'">趣味数独</button>
-                <button class="tab active" onclick="window.location.href='paradise.html'">共创乐园</button>
+                <button class="tab active" onclick="window.location.href='custom-editor.html'">自定义游戏</button>
             </nav>
         </div>
 
@@ -84,10 +165,19 @@
                 <div class="num-pad" id="numberPad"></div>
             </div>
         </div>
+
+        <!-- 编码输入区域 -->
+        <div class="code-input-section">
+            <div class="code-input-wrapper">
+                <input type="text" id="gameCodeInput" class="code-input" placeholder="输入或粘贴游戏编码，快速加载他人分享的数独">
+                <button class="generate-btn" onclick="generateGameFromCode()">生成</button>
+            </div>
+            <div class="code-error" id="codeError"></div>
+        </div>
     </main>
 
     <footer>
-        数独共创乐园@王板凳
+        趣味数独乐园@王板凳
     </footer>
 
     <script src="js/user.js"></script>

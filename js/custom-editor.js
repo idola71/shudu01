@@ -717,106 +717,194 @@ function startGame() {
 
 // 分享游戏
 function shareGame() {
-    // 先执行核验
     if (!performVerification()) {
         return;
     }
 
-    // 获取当前用户信息
-    const user = window.UserManager?.getUser ? UserManager.getUser() : { nickname: '当前玩家', defaultSlogan: '' };
+    const user = window.UserManager?.getUser ? UserManager.getUser() : null;
+
+    const gameData = {
+        puzzle: currentPuzzle.join(''),
+        solution: currentSolution.join(''),
+        difficulty: detectedDifficulty,
+        slogan: '分享游戏',
+        nickname: user?.nickname || user?.username || '匿名玩家',
+        shareTime: new Date().toLocaleString('zh-CN'),
+        version: '1.0'
+    };
     
-    // 创建分享对话框
+    const gameCode = generateGameCode(gameData);
+    
     const dialog = document.createElement('div');
-    dialog.classList.add('new-game-dialog');
+    dialog.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 1000;
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.2s ease;
+    `;
 
     const content = document.createElement('div');
-    content.classList.add('new-game-dialog-content');
+    content.style.cssText = `
+        width: 90%;
+        max-width: 450px;
+        background: var(--theme-gradient, linear-gradient(135deg, #FFA726 0%, #FF7043 100%));
+        border-radius: 12px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        overflow: hidden;
+        animation: slideUp 0.3s ease;
+    `;
+
+    const header = document.createElement('div');
+    header.style.cssText = `
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 36px;
+        padding: 0 16px;
+        background: rgba(255, 255, 255, 0.15);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    `;
 
     const title = document.createElement('h3');
-    title.textContent = '分享游戏';
-    content.appendChild(title);
-
-    const desc = document.createElement('p');
-    desc.textContent = '请输入游戏标语（最多20字）';
-    content.appendChild(desc);
-
-    // 创建输入框容器
-    const inputContainer = document.createElement('div');
-    inputContainer.classList.add('slogan-input-container');
-
-    // 标语输入框
-    const sloganInput = document.createElement('input');
-    sloganInput.type = 'text';
-    sloganInput.maxLength = 20;
-    sloganInput.placeholder = '输入游戏标语...';
-    sloganInput.classList.add('slogan-input');
-    sloganInput.value = user.defaultSlogan || generateRandomSlogan();
-    inputContainer.appendChild(sloganInput);
-
-    // 随机生成按钮
-    const randomBtn = document.createElement('button');
-    randomBtn.classList.add('random-btn');
-    randomBtn.innerHTML = `
-        <svg viewBox="0 0 24 24">
-            <polyline points="23 4 23 10 17 10"></polyline>
-            <polyline points="1 20 1 14 7 14"></polyline>
-            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-        </svg>
+    title.textContent = '游戏编码';
+    title.style.cssText = `
+        margin: 0;
+        font-size: 15px;
+        font-weight: 600;
+        color: white;
     `;
-    randomBtn.title = '随机生成';
-    randomBtn.addEventListener('click', () => {
-        sloganInput.value = generateRandomSlogan();
-    });
-    inputContainer.appendChild(randomBtn);
+    header.appendChild(title);
 
-    content.appendChild(inputContainer);
-
-    // 右上角关闭按钮
     const closeBtn = document.createElement('button');
-    closeBtn.classList.add('dialog-close-btn');
     closeBtn.innerHTML = '×';
-    closeBtn.title = '关闭';
+    closeBtn.style.cssText = `
+        background: transparent;
+        border: none;
+        color: white;
+        width: 24px;
+        height: 24px;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+        opacity: 0.85;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    `;
     closeBtn.addEventListener('click', () => {
         dialog.remove();
     });
-    content.appendChild(closeBtn);
+    header.appendChild(closeBtn);
+
+    content.appendChild(header);
+
+    const body = document.createElement('div');
+    body.style.cssText = `
+        padding: 16px;
+    `;
+
+    const codeContainer = document.createElement('div');
+    codeContainer.style.cssText = `
+        background: rgba(255, 255, 255, 0.15);
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    `;
+
+    const codeText = document.createElement('textarea');
+    codeText.value = gameCode;
+    codeText.readOnly = true;
+    codeText.style.cssText = `
+        width: 100%;
+        height: 60px;
+        border: none;
+        background: transparent;
+        resize: none;
+        font-size: 12px;
+        line-height: 1.5;
+        color: white;
+        outline: none;
+        font-family: monospace;
+    `;
+    codeContainer.appendChild(codeText);
+
+    body.appendChild(codeContainer);
+
+    const tip = document.createElement('p');
+    tip.innerHTML = '💡 <strong>使用方法：</strong><br>1. 复制上方编码<br>2. 发送给好友<br>3. 好友在自定义游戏粘贴编码即可玩同一局游戏';
+    tip.style.cssText = `
+        background: rgba(255, 255, 255, 0.1);
+        padding: 12px;
+        border-radius: 8px;
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 13px;
+        margin: 0 0 16px 0;
+        line-height: 1.5;
+    `;
+    body.appendChild(tip);
 
     const btnContainer = document.createElement('div');
-    btnContainer.classList.add('dialog-buttons');
+    btnContainer.style.cssText = `
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    `;
 
-    const confirmBtn = document.createElement('button');
-    confirmBtn.textContent = '生成编码';
-    confirmBtn.classList.add('dialog-btn', 'dialog-btn-primary');
-    confirmBtn.addEventListener('click', () => {
-        const slogan = sloganInput.value.trim() || '未命名游戏';
-
-        // 创建游戏数据
-        const gameData = {
-            puzzle: currentPuzzle.join(''),
-            solution: currentSolution.join(''),
-            difficulty: detectedDifficulty,
-            slogan: slogan,
-            nickname: user?.nickname || user?.username || '匿名玩家',
-            shareTime: new Date().toLocaleString('zh-CN'),
-            version: '1.0'
-        };
-        
-        // 生成 Base64 编码
-        const gameCode = generateGameCode(gameData);
-        
-        // 显示编码对话框
-        showGameCodeDialog(gameCode, slogan);
-        
-        // 发送站内信
-        sendShareMessage(gameCode, slogan);
-        
-        dialog.remove();
+    const copyBtn = document.createElement('button');
+    copyBtn.textContent = '复制编码';
+    copyBtn.style.cssText = `
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        color: white;
+        padding: 10px 24px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    `;
+    copyBtn.addEventListener('mouseover', () => {
+        copyBtn.style.background = 'rgba(255, 255, 255, 0.3)';
     });
-    btnContainer.appendChild(confirmBtn);
+    copyBtn.addEventListener('mouseout', () => {
+        copyBtn.style.background = 'rgba(255, 255, 255, 0.2)';
+    });
+    copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(gameCode).then(() => {
+            copyBtn.textContent = '已复制 ✓';
+            copyBtn.style.background = '#4CAF50';
+            setTimeout(() => {
+                copyBtn.textContent = '复制编码';
+                copyBtn.style.background = 'rgba(255, 255, 255, 0.2)';
+            }, 2000);
+        }).catch(() => {
+            codeText.select();
+            document.execCommand('copy');
+            copyBtn.textContent = '已复制 ✓';
+        });
+    });
+    btnContainer.appendChild(copyBtn);
 
-    content.appendChild(btnContainer);
+    body.appendChild(btnContainer);
+    content.appendChild(body);
     dialog.appendChild(content);
     document.body.appendChild(dialog);
+
+    dialog.addEventListener('click', (e) => {
+        if (e.target === dialog) {
+            dialog.remove();
+        }
+    });
 }
 
 // 生成游戏编码（Base64）
@@ -1043,4 +1131,87 @@ function generateGameId() {
     const timestamp = Date.now();
     
     return `${year}${month}${day}-${timestamp}`;
+}
+
+// 解析游戏编码
+function parseGameCode(code) {
+    try {
+        const utf8String = atob(code);
+        const jsonString = decodeURIComponent(escape(utf8String));
+        return JSON.parse(jsonString);
+    } catch (error) {
+        console.error('解析编码失败:', error);
+        return null;
+    }
+}
+
+// 从编码生成游戏
+function generateGameFromCode() {
+    const codeInput = document.getElementById('gameCodeInput');
+    const errorDiv = document.getElementById('codeError');
+    const code = codeInput.value.trim();
+
+    if (!code) {
+        errorDiv.textContent = '请输入游戏编码';
+        return;
+    }
+
+    const gameData = parseGameCode(code);
+
+    if (!gameData) {
+        errorDiv.textContent = '编码无效，请检查是否正确复制';
+        return;
+    }
+
+    if (!gameData.puzzle || !gameData.solution || !gameData.difficulty) {
+        errorDiv.textContent = '编码数据不完整';
+        return;
+    }
+
+    // 清空棋盘
+    currentPuzzle = Array(81).fill(0);
+    currentSolution = gameData.solution.split('').map(Number);
+    detectedDifficulty = gameData.difficulty;
+
+    // 设置棋盘为谜题数据
+    const puzzleArr = gameData.puzzle.split('').map(Number);
+    currentPuzzle = [...puzzleArr];
+
+    // 重新渲染棋盘
+    renderBoard('gridContainer', currentPuzzle);
+    
+    // 更新难度显示
+    const diffConfig = DIFFICULTY_CONFIG[gameData.difficulty] || DIFFICULTY_CONFIG.medium;
+    document.querySelector('.difficulty-text').textContent = diffConfig.name;
+    document.querySelector('.difficulty-stars').textContent = '★'.repeat(diffConfig.stars);
+
+    // 清空错误提示
+    errorDiv.textContent = '';
+    
+    // 提示成功
+    showSuccessMessage('游戏已生成！');
+}
+
+function showSuccessMessage(message) {
+    const msgDiv = document.createElement('div');
+    msgDiv.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(76, 175, 80, 0.95);
+        color: white;
+        padding: 20px 40px;
+        border-radius: 12px;
+        font-size: 18px;
+        font-weight: 600;
+        z-index: 1000;
+        animation: fadeInOut 2s ease-in-out;
+    `;
+    msgDiv.textContent = message;
+    document.body.appendChild(msgDiv);
+
+    setTimeout(() => {
+        msgDiv.remove();
+    }, 2000);
 }

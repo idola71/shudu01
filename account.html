@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>账号管理 - 数独共创乐园</title>
+    <title>账号管理 - 趣味数独乐园</title>
     <script>
         // 在页面加载前设置主题，避免闪烁
         (function() {
@@ -339,10 +339,6 @@
                     <label>昵称</label>
                     <input type="text" id="regNickname" placeholder="您的游戏昵称">
                 </div>
-                <div class="form-group">
-                    <label>默认标语<span class="optional">(选填)</span></label>
-                    <input type="text" id="regSlogan" placeholder="分享游戏时的默认标语">
-                </div>
                 <button class="btn btn-primary" id="registerBtn">注册</button>
             </div>
         </div>
@@ -375,17 +371,6 @@
                 <div class="info-row">
                     <span class="label">完成游戏</span>
                     <span class="value" id="completedGames"></span>
-                </div>
-                <div class="info-row">
-                    <span class="label">默认标语</span>
-                    <div class="slogan-edit-container" id="sloganContainer">
-                        <span id="userSlogan" class="slogan-text"></span>
-                        <button class="edit-btn" id="editSloganBtn">编辑</button>
-                        <!-- 编辑模式控件 -->
-                        <input type="text" id="sloganInput" class="slogan-input" placeholder="输入新的默认标语" style="display: none;">
-                        <button class="save-btn" id="saveSloganBtn" style="display: none;">保存</button>
-                        <button class="cancel-btn" id="cancelSloganBtn" style="display: none;">取消</button>
-                    </div>
                 </div>
             </div>
             
@@ -435,14 +420,12 @@
                 const username = document.getElementById('regUsername').value;
                 const password = document.getElementById('regPassword').value;
                 const nickname = document.getElementById('regNickname').value;
-                const slogan = document.getElementById('regSlogan').value;
                 
-                const result = UserManager.register(username, password, nickname, slogan);
+                const result = UserManager.register(username, password, nickname);
                 showMessage(result.message, result.success);
                 
                 if (result.success) {
                     setTimeout(() => {
-                        // 注册成功后自动登录
                         UserManager.login(username, password);
                         showUserPanel();
                     }, 1000);
@@ -454,49 +437,6 @@
                 UserManager.logout();
                 showAuthForms();
                 showMessage('已退出登录', true);
-            });
-
-            // 编辑标语
-            document.getElementById('editSloganBtn').addEventListener('click', function() {
-                const user = UserManager.getUser();
-                document.getElementById('sloganInput').value = user.defaultSlogan || '';
-                // 隐藏显示模式控件
-                document.getElementById('userSlogan').style.display = 'none';
-                document.getElementById('editSloganBtn').style.display = 'none';
-                // 显示编辑模式控件
-                document.getElementById('sloganInput').style.display = 'block';
-                document.getElementById('saveSloganBtn').style.display = 'block';
-                document.getElementById('cancelSloganBtn').style.display = 'block';
-                // 聚焦输入框
-                document.getElementById('sloganInput').focus();
-            });
-
-            // 保存标语
-            document.getElementById('saveSloganBtn').addEventListener('click', function() {
-                const newSlogan = document.getElementById('sloganInput').value;
-                const result = UserManager.updateDefaultSlogan(newSlogan);
-                
-                if (result) {
-                    showMessage('标语更新成功', true);
-                    document.getElementById('userSlogan').textContent = newSlogan || '未设置';
-                } else {
-                    showMessage('更新失败，请重试', false);
-                }
-                
-                // 切换回显示模式
-                exitEditMode();
-            });
-
-            // 取消编辑标语
-            document.getElementById('cancelSloganBtn').addEventListener('click', function() {
-                exitEditMode();
-            });
-            
-            // 按ESC键取消编辑
-            document.getElementById('sloganInput').addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    exitEditMode();
-                }
             });
 
             // 检查登录状态
@@ -514,17 +454,6 @@
                 msg.classList.remove('success', 'error');
             }, 3000);
         }
-        
-        // 退出编辑模式
-        function exitEditMode() {
-            // 隐藏编辑模式控件
-            document.getElementById('sloganInput').style.display = 'none';
-            document.getElementById('saveSloganBtn').style.display = 'none';
-            document.getElementById('cancelSloganBtn').style.display = 'none';
-            // 显示显示模式控件
-            document.getElementById('userSlogan').style.display = 'inline';
-            document.getElementById('editSloganBtn').style.display = 'block';
-        }
 
         function showUserPanel() {
             document.getElementById('authForms').style.display = 'none';
@@ -538,14 +467,12 @@
             const expToNext = UserManager.getExpToNextLevel();
             document.getElementById('expToNext').textContent = expToNext + ' EXP';
             
-            // 更新进度条
             const currentLevelExp = UserManager.getCurrentLevelExp(user.level);
             const nextLevelExp = UserManager.getCurrentLevelExp(user.level + 1);
             const progress = ((user.exp - currentLevelExp) / (nextLevelExp - currentLevelExp)) * 100;
             document.getElementById('expBar').style.width = Math.min(progress, 100) + '%';
             
             document.getElementById('completedGames').textContent = user.totalGames + ' 局';
-            document.getElementById('userSlogan').textContent = user.defaultSlogan || '未设置';
         }
 
         function showAuthForms() {

@@ -1,4 +1,4 @@
-﻿// 用户管理模块
+// 用户管理模块
 
 const API_BASE = '';
 
@@ -50,7 +50,7 @@ function isLoggedIn() {
 }
 
 // 注册账号
-function register(username, password, nickname, defaultSlogan = '') {
+function register(username, password, nickname) {
     // 验证输入
     if (!username || !password || !nickname) {
         return { success: false, message: '账号、密码和昵称不能为空' };
@@ -74,9 +74,8 @@ function register(username, password, nickname, defaultSlogan = '') {
     const newUser = {
         id: Date.now().toString(),
         username,
-        password: btoa(password), // 简单加密
+        password: btoa(password),
         nickname,
-        defaultSlogan,
         exp: 0,
         level: 1,
         levelName: 'Lv.1',
