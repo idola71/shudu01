@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -20,9 +20,9 @@
             document.documentElement.style.setProperty('--theme-gradient', themes[savedTheme] || themes.orange);
         })();
     </script>
-    <link rel="stylesheet" href="public/game.css">
-    <link rel="stylesheet" href="public/settings.css">
-    <link rel="stylesheet" href="public/message-popup.css">
+    <link rel="stylesheet" href="game.css">
+    <link rel="stylesheet" href="settings.css">
+    <link rel="stylesheet" href="message-popup.css">
 </head>
 <body>
     <header class="game-header">
@@ -35,10 +35,10 @@
         </div>
 
         <div class="header-icons">
-            <a href="index.html"><img src="public/images/主页图标.svg" alt="首页"></a>
-            <a href="account.html" data-action="account"><img src="public/images/账号图标.svg" alt="账号"></a>
-            <a href="#" id="messageBtn" style="position: relative;"><img src="public/images/消息图标.svg" alt="消息"><span id="messageBadge"></span></a>
-            <a href="#" onclick="event.preventDefault(); event.stopPropagation(); toggleSettingsMenu(this);"><img src="public/images/设置图标.svg" alt="设置"></a>
+            <a href="index.html"><img src="images/主页图标.svg" alt="首页"></a>
+            <a href="account.html" data-action="account"><img src="images/账号图标.svg" alt="账号"></a>
+            <a href="#" id="messageBtn" style="position: relative;"><img src="images/消息图标.svg" alt="消息"><span id="messageBadge"></span></a>
+            <a href="#" onclick="event.preventDefault(); event.stopPropagation(); toggleSettingsMenu(this);"><img src="images/设置图标.svg" alt="设置"></a>
         </div>
     </header>
 
@@ -52,7 +52,7 @@
                 <span class="editor-label">编辑器</span>
             </div>
             <button class="music-control-btn" id="musicControlBtn" title="背景音乐">
-                <img class="music-icon" src="public/images/音乐开关.svg" alt="音乐" />
+                <img class="music-icon" src="images/音乐开关.svg" alt="音乐" />
             </button>
         </div>
 
@@ -90,12 +90,12 @@
         数独共创乐园@王板凳
     </footer>
 
-    <script src="public/js/user.js"></script>
-    <script src="public/js/user-menu.js"></script>
-    <script src="public/js/custom-editor.js"></script>
-    <script src="public/js/settings-menu.js"></script>
-    <script src="public/js/audio-manager.js"></script>
-    <script src="public/js/sound-manager.js"></script>
-    <script src="public/js/message-popup.js"></script>
+    <script src="js/user.js"></script>
+    <script src="js/user-menu.js"></script>
+    <script src="js/custom-editor.js"></script>
+    <script src="js/settings-menu.js"></script>
+    <script src="js/audio-manager.js"></script>
+    <script src="js/sound-manager.js"></script>
+    <script src="js/message-popup.js"></script>
 </body>
 </html>

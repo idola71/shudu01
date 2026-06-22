@@ -1,4 +1,4 @@
-const fs = require('fs');
+﻿const fs = require('fs');
 const path = require('path');
 
 const config = {
@@ -8,7 +8,7 @@ const config = {
 };
 
 const filesToUpdate = [
-    'public/js/leancloud-config.js'
+    'js/leancloud-config.js'
 ];
 
 function replaceConfig(content, config) {

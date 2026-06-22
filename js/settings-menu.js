@@ -1,4 +1,4 @@
-// 设置菜单组件
+﻿// 设置菜单组件
 let settingsMenuContainer = null;
 
 // 主题配置

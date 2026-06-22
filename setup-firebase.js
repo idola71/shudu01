@@ -1,4 +1,4 @@
-const fs = require('fs');
+﻿const fs = require('fs');
 const path = require('path');
 
 const config = {
@@ -11,14 +11,14 @@ const config = {
 };
 
 const filesToUpdate = [
-    'public/js/firebase-config.js',
-    'public/js/firebase-service.js',
-    'public/js/leaderboard.js',
-    'public/js/paradise-game.js',
-    'public/js/message-popup.js',
-    'public/js/game.js',
-    'public/js/custom-game.js',
-    'public/js/custom-editor.js'
+    'js/firebase-config.js',
+    'js/firebase-service.js',
+    'js/leaderboard.js',
+    'js/paradise-game.js',
+    'js/message-popup.js',
+    'js/game.js',
+    'js/custom-game.js',
+    'js/custom-editor.js'
 ];
 
 function replaceConfig(content, config) {

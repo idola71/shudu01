@@ -1,4 +1,4 @@
-import { 
+﻿import { 
     initTCB, 
     getSharedGames, 
     deleteSharedGame,
@@ -129,20 +129,20 @@ function createGameCard(game) {
             <div class="card-title" title="${game.slogan}">${game.slogan}</div>
             <div class="card-game-code">游戏编号：${game.gameCode || 'N/A'}</div>
             <div class="card-meta">
-                <img src="public/images/账号图标.svg" alt="${game.nickname}">
+                <img src="images/账号图标.svg" alt="${game.nickname}">
                 <span>${game.nickname}</span>
             </div>
             <div class="card-stats">
                 <div class="stat-item">
-                    <img src="public/images/参与人数图标.svg" alt="参与人数" class="stat-icon">
+                    <img src="images/参与人数图标.svg" alt="参与人数" class="stat-icon">
                     <span>${game.participants}</span>
                 </div>
                 <div class="stat-item">
-                    <img src="public/images/通关人数图标.svg" alt="通关人数" class="stat-icon">
+                    <img src="images/通关人数图标.svg" alt="通关人数" class="stat-icon">
                     <span>${game.completed}</span>
                 </div>
                 <div class="stat-item">
-                    <img src="public/images/分享日期图标.svg" alt="分享日期" class="stat-icon">
+                    <img src="images/分享日期图标.svg" alt="分享日期" class="stat-icon">
                     <span>${game.shareTime}</span>
                 </div>
             </div>

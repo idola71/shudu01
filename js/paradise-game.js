@@ -1,4 +1,4 @@
-// 游戏状态
+﻿// 游戏状态
 let currentPuzzle = [];
 let currentSolution = [];
 let notes = {};

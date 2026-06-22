@@ -1,4 +1,4 @@
-import { firebaseConfig } from './firebase-config.js';
+﻿import { firebaseConfig } from './firebase-config.js';
 
 let db = null;
 let initialized = false;

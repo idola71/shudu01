@@ -1,4 +1,4 @@
-// 游戏核心模块
+﻿// 游戏核心模块
 
 // 全局变量
 let currentPuzzle = null;

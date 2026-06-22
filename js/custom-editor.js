@@ -1,4 +1,4 @@
-// 自定义游戏编辑器模块
+﻿// 自定义游戏编辑器模块
 
 // 全局变量
 let currentPuzzle = Array(81).fill(0);

@@ -1,4 +1,4 @@
-// 音效管理器模块
+﻿// 音效管理器模块
 class SoundManager {
     constructor() {
         this.audioContext = null;

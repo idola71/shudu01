@@ -1,4 +1,4 @@
-// 背景音乐管理器
+﻿// 背景音乐管理器
 class AudioManager {
     constructor() {
         this.audio = null;
@@ -12,44 +12,44 @@ class AudioManager {
         this.retryCount = 0; // 重试次数
         this.maxRetries = 5; // 最大重试次数
         
-        // 歌曲列表 - 从 public/audio/ 文件夹自动加载
+        // 歌曲列表 - 从 audio/ 文件夹自动加载
         this.songs = [
-            { name: '2099我的机器女友', path: 'public/audio/2099我的机器女友.mp3' },
-            { name: '一只慵懒的猫', path: 'public/audio/一只慵懒的猫.mp3' },
-            { name: '上高速', path: 'public/audio/上高速.mp3' },
-            { name: '不怕失去', path: 'public/audio/不怕失去.mp3' },
-            { name: '危险老公', path: 'public/audio/危险老公.mp3' },
-            { name: '同时', path: 'public/audio/同时.mp3' },
-            { name: '哦妈妈', path: 'public/audio/哦妈妈.mp3' },
-            { name: '大脑壳', path: 'public/audio/大脑壳.mp3' },
-            { name: '好少年', path: 'public/audio/好少年.mp3' },
-            { name: '小土墙', path: 'public/audio/小土墙.mp3' },
-            { name: '小心他诡计多端', path: 'public/audio/小心他诡计多端.mp3' },
-            { name: '开导', path: 'public/audio/开导.mp3' },
-            { name: '想你来到我的世界里', path: 'public/audio/想你来到我的世界里.mp3' },
-            { name: '我一直追随你的影', path: 'public/audio/我一直追随你的影.mp3' },
-            { name: '拨号上网', path: 'public/audio/拨号上网.mp3' },
-            { name: '拳手', path: 'public/audio/拳手.mp3' },
-            { name: '摸鱼狂想曲', path: 'public/audio/摸鱼狂想曲.mp3' },
-            { name: '既然已经不喜欢 就不要假装想靠近', path: 'public/audio/既然已经不喜欢 就不要假装想靠近.mp3' },
-            { name: '棍子上的胡萝卜', path: 'public/audio/棍子上的胡萝卜.mp3' },
-            { name: '没说一句', path: 'public/audio/没说一句.mp3' },
-            { name: '滑翔', path: 'public/audio/滑翔.mp3' },
-            { name: '漂泊成歌', path: 'public/audio/漂泊成歌.mp3' },
-            { name: '现代英雄物语', path: 'public/audio/现代英雄物语.mp3' },
-            { name: '相望', path: 'public/audio/相望.mp3' },
-            { name: '老公又画了个饼', path: 'public/audio/老公又画了个饼.mp3' },
-            { name: '老公经不起考验', path: 'public/audio/老公经不起考验.mp3' },
-            { name: '老婆真危险', path: 'public/audio/老婆真危险.mp3' },
-            { name: '菜鸡小叔', path: 'public/audio/菜鸡小叔.mp3' },
-            { name: '设计院的工作好', path: 'public/audio/设计院的工作好.mp3' },
-            { name: '超时空隧道', path: 'public/audio/超时空隧道.mp3' },
-            { name: '足球小将', path: 'public/audio/足球小将.mp3' },
-            { name: '软弱', path: 'public/audio/软弱.mp3' },
-            { name: '铁公鸡之歌', path: 'public/audio/铁公鸡之歌.mp3' },
-            { name: '靠近&靠近', path: 'public/audio/靠近&靠近.mp3' },
-            { name: '靠近一点点', path: 'public/audio/靠近一点点.mp3' },
-            { name: '鱼眼看世界', path: 'public/audio/鱼眼看世界.mp3' }
+            { name: '2099我的机器女友', path: 'audio/2099我的机器女友.mp3' },
+            { name: '一只慵懒的猫', path: 'audio/一只慵懒的猫.mp3' },
+            { name: '上高速', path: 'audio/上高速.mp3' },
+            { name: '不怕失去', path: 'audio/不怕失去.mp3' },
+            { name: '危险老公', path: 'audio/危险老公.mp3' },
+            { name: '同时', path: 'audio/同时.mp3' },
+            { name: '哦妈妈', path: 'audio/哦妈妈.mp3' },
+            { name: '大脑壳', path: 'audio/大脑壳.mp3' },
+            { name: '好少年', path: 'audio/好少年.mp3' },
+            { name: '小土墙', path: 'audio/小土墙.mp3' },
+            { name: '小心他诡计多端', path: 'audio/小心他诡计多端.mp3' },
+            { name: '开导', path: 'audio/开导.mp3' },
+            { name: '想你来到我的世界里', path: 'audio/想你来到我的世界里.mp3' },
+            { name: '我一直追随你的影', path: 'audio/我一直追随你的影.mp3' },
+            { name: '拨号上网', path: 'audio/拨号上网.mp3' },
+            { name: '拳手', path: 'audio/拳手.mp3' },
+            { name: '摸鱼狂想曲', path: 'audio/摸鱼狂想曲.mp3' },
+            { name: '既然已经不喜欢 就不要假装想靠近', path: 'audio/既然已经不喜欢 就不要假装想靠近.mp3' },
+            { name: '棍子上的胡萝卜', path: 'audio/棍子上的胡萝卜.mp3' },
+            { name: '没说一句', path: 'audio/没说一句.mp3' },
+            { name: '滑翔', path: 'audio/滑翔.mp3' },
+            { name: '漂泊成歌', path: 'audio/漂泊成歌.mp3' },
+            { name: '现代英雄物语', path: 'audio/现代英雄物语.mp3' },
+            { name: '相望', path: 'audio/相望.mp3' },
+            { name: '老公又画了个饼', path: 'audio/老公又画了个饼.mp3' },
+            { name: '老公经不起考验', path: 'audio/老公经不起考验.mp3' },
+            { name: '老婆真危险', path: 'audio/老婆真危险.mp3' },
+            { name: '菜鸡小叔', path: 'audio/菜鸡小叔.mp3' },
+            { name: '设计院的工作好', path: 'audio/设计院的工作好.mp3' },
+            { name: '超时空隧道', path: 'audio/超时空隧道.mp3' },
+            { name: '足球小将', path: 'audio/足球小将.mp3' },
+            { name: '软弱', path: 'audio/软弱.mp3' },
+            { name: '铁公鸡之歌', path: 'audio/铁公鸡之歌.mp3' },
+            { name: '靠近&靠近', path: 'audio/靠近&靠近.mp3' },
+            { name: '靠近一点点', path: 'audio/靠近一点点.mp3' },
+            { name: '鱼眼看世界', path: 'audio/鱼眼看世界.mp3' }
         ];
         
         this.init();

@@ -1,4 +1,4 @@
-const fs = require('fs');
+﻿const fs = require('fs');
 const path = require('path');
 
 const config = {
@@ -7,7 +7,7 @@ const config = {
 };
 
 const filesToUpdate = [
-    'public/js/tcb-config.js'
+    'js/tcb-config.js'
 ];
 
 function replaceConfig(content, config) {

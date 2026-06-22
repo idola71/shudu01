@@ -1,4 +1,4 @@
-import { tcbConfig } from './tcb-config.js';
+﻿import { tcbConfig } from './tcb-config.js';
 
 let db = null;
 let initialized = false;

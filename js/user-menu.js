@@ -1,4 +1,4 @@
-// 用户菜单组件
+﻿// 用户菜单组件
 
 let userMenuContainer = null;
 let isMenuOpen = false;

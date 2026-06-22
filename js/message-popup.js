@@ -1,4 +1,4 @@
-class MessagePopup {
+﻿class MessagePopup {
     constructor() {
         this.popup = null;
         this.backdrop = null;
@@ -27,7 +27,7 @@ class MessagePopup {
         this.popup.innerHTML = `
             <div class="message-header">
                 <div class="header-content">
-                    <img src="public/images/消息图标.svg" alt="消息">
+                    <img src="images/消息图标.svg" alt="消息">
                     <h2>站内信</h2>
                 </div>
                 <button class="close-btn" id="closeMessagePopup">✕</button>
@@ -174,15 +174,15 @@ class MessagePopup {
 
         messageList.innerHTML = pageMessages.map(msg => `
             <div class="message-item ${msg.read ? '' : 'unread'}">
-                <img src="public/images/消息图标.svg" class="message-icon" alt="消息">
+                <img src="images/消息图标.svg" class="message-icon" alt="消息">
                 <div class="message-content">
                     <div class="message-title">${msg.title}</div>
                     <div class="message-text">${msg.content}</div>
                     <div class="message-info-row">
                         ${msg.participants !== undefined ? `
                             <div class="message-stats">
-                                <span><img src="public/images/参与人数图标.svg" alt="参与人数" class="message-stat-icon"> ${msg.participants} 参与</span>
-                                <span><img src="public/images/通关人数图标.svg" alt="通关人数" class="message-stat-icon"> ${msg.completed} 通关</span>
+                                <span><img src="images/参与人数图标.svg" alt="参与人数" class="message-stat-icon"> ${msg.participants} 参与</span>
+                                <span><img src="images/通关人数图标.svg" alt="通关人数" class="message-stat-icon"> ${msg.completed} 通关</span>
                             </div>
                         ` : ''}
                         <div class="message-time">${msg.time}</div>
@@ -235,8 +235,8 @@ class MessagePopup {
                 <p class="message-detail-content">${msg.content}</p>
                 ${msg.participants !== undefined ? `
                     <div class="message-detail-stats">
-                        <span><img src="public/images/参与人数图标.svg" alt="参与人数" class="message-stat-icon"> ${msg.participants} 人参与</span>
-                        <span><img src="public/images/通关人数图标.svg" alt="通关人数" class="message-stat-icon"> ${msg.completed} 人通关</span>
+                        <span><img src="images/参与人数图标.svg" alt="参与人数" class="message-stat-icon"> ${msg.participants} 人参与</span>
+                        <span><img src="images/通关人数图标.svg" alt="通关人数" class="message-stat-icon"> ${msg.completed} 人通关</span>
                     </div>
                 ` : ''}
                 <p class="message-detail-time">${msg.time}</p>

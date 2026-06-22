@@ -1,4 +1,4 @@
-// 今日挑战模块
+﻿// 今日挑战模块
 
 function showNewGameDialog() {
   const dialog = document.createElement('div');

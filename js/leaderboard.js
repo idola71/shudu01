@@ -1,4 +1,4 @@
-let leaderboardPopup = null;
+﻿let leaderboardPopup = null;
 let leaderboardBackdrop = null;
 let gamePaused = false;
 
