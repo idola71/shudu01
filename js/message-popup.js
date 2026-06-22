@@ -1,4 +1,4 @@
-﻿class MessagePopup {
+class MessagePopup {
     constructor() {
         this.popup = null;
         this.backdrop = null;
@@ -9,7 +9,7 @@
         this.init();
     }
 
-    async init() {
+    init() {
         this.createPopup();
         this.loadMessages();
         this.attachEvents();
@@ -58,76 +58,14 @@
         });
     }
 
-    async loadMessages() {
-        let messages = [];
-        
-        try {
-            const { initTCB, getMessages } = await import('./tcb-service.js');
-            await initTCB();
-            
-            let userId = 'anonymous';
-            if (window.UserManager && UserManager.isLoggedIn()) {
-                const user = UserManager.getUser();
-                userId = user?.id || user?.username || 'anonymous';
-            }
-            
-            messages = await getMessages(userId);
-        } catch (error) {
-            console.error('TCB loadMessages error:', error);
-        }
-        
-        if (messages.length === 0) {
-            messages = JSON.parse(localStorage.getItem('messages') || '[]');
-        } else {
-            localStorage.setItem('messages', JSON.stringify(messages));
-        }
-        
-        this.messages = messages;
+    loadMessages() {
+        this.messages = JSON.parse(localStorage.getItem('messages') || '[]');
         this.unreadCount = this.messages.filter(m => !m.read).length;
         this.updateBadge();
-        this.updateSharedGameStats();
-    }
-
-    async updateSharedGameStats() {
-        let sharedGames = [];
-        
-        try {
-            const { initTCB, getSharedGames } = await import('./tcb-service.js');
-            await initTCB();
-            sharedGames = await getSharedGames();
-        } catch (error) {
-            console.error('TCB updateSharedGameStats error:', error);
-        }
-        
-        if (sharedGames.length === 0) {
-            sharedGames = JSON.parse(localStorage.getItem('sharedGames') || '[]');
-        } else {
-            localStorage.setItem('sharedGames', JSON.stringify(sharedGames));
-        }
-        
-        let hasUpdates = false;
-        this.messages.forEach(msg => {
-            if (msg.gameId) {
-                const game = sharedGames.find(g => g.id === msg.gameId || g._id === msg.gameId);
-                if (game) {
-                    if (msg.participants !== (game.participants || 0) || msg.completed !== (game.completed || 0)) {
-                        msg.participants = game.participants || 0;
-                        msg.completed = game.completed || 0;
-                        msg.content = `您分享的数独游戏「${game.slogan || '未命名'}」已有 ${game.participants || 0} 人参与，${game.completed || 0} 人通关！`;
-                        hasUpdates = true;
-                    }
-                }
-            }
-        });
-        
-        if (hasUpdates) {
-            localStorage.setItem('messages', JSON.stringify(this.messages));
-        }
     }
 
     show() {
         this.loadMessages();
-        this.updateSharedGameStats();
         this.currentPage = 1;
         this.renderMessages();
         this.updatePagination();
@@ -162,7 +100,7 @@
                 <div class="empty-state">
                     <div class="empty-icon">📭</div>
                     <p>暂无消息</p>
-                    <p class="empty-hint">完成游戏或分享作品可获得消息通知</p>
+                    <p class="empty-hint">分享游戏后可在此查看编码记录</p>
                 </div>
             `;
             return;
@@ -179,12 +117,6 @@
                     <div class="message-title">${msg.title}</div>
                     <div class="message-text">${msg.content}</div>
                     <div class="message-info-row">
-                        ${msg.participants !== undefined ? `
-                            <div class="message-stats">
-                                <span><img src="images/参与人数图标.svg" alt="参与人数" class="message-stat-icon"> ${msg.participants} 参与</span>
-                                <span><img src="images/通关人数图标.svg" alt="通关人数" class="message-stat-icon"> ${msg.completed} 通关</span>
-                            </div>
-                        ` : ''}
                         <div class="message-time">${msg.time}</div>
                     </div>
                 </div>
@@ -223,6 +155,9 @@
         detailBackdrop.style.display = 'block';
         document.body.appendChild(detailBackdrop);
 
+        // 如果有完整编码，显示复制按钮
+        const hasFullCode = msg.gameCode && msg.gameCode.length > 20;
+
         const detailPopup = document.createElement('div');
         detailPopup.className = 'message-detail-popup';
         detailPopup.style.display = 'block';
@@ -233,16 +168,36 @@
             </div>
             <div class="message-detail-body">
                 <p class="message-detail-content">${msg.content}</p>
-                ${msg.participants !== undefined ? `
-                    <div class="message-detail-stats">
-                        <span><img src="images/参与人数图标.svg" alt="参与人数" class="message-stat-icon"> ${msg.participants} 人参与</span>
-                        <span><img src="images/通关人数图标.svg" alt="通关人数" class="message-stat-icon"> ${msg.completed} 人通关</span>
+                ${hasFullCode ? `
+                    <div class="code-section">
+                        <p class="code-label">完整编码：</p>
+                        <textarea class="code-textarea" readonly>${msg.gameCode}</textarea>
+                        <button class="copy-code-btn" id="copyFullCode">复制完整编码</button>
                     </div>
                 ` : ''}
                 <p class="message-detail-time">${msg.time}</p>
             </div>
         `;
         document.body.appendChild(detailPopup);
+
+        // 复制编码按钮
+        if (hasFullCode) {
+            document.getElementById('copyFullCode')?.addEventListener('click', () => {
+                navigator.clipboard.writeText(msg.gameCode).then(() => {
+                    const btn = document.getElementById('copyFullCode');
+                    btn.textContent = '已复制 ✓';
+                    btn.style.background = '#4CAF50';
+                    setTimeout(() => {
+                        btn.textContent = '复制完整编码';
+                        btn.style.background = '';
+                    }, 2000);
+                }).catch(() => {
+                    const textarea = detailPopup.querySelector('.code-textarea');
+                    textarea.select();
+                    document.execCommand('copy');
+                });
+            });
+        }
 
         const closeDetail = () => {
             detailBackdrop.remove();
@@ -259,20 +214,8 @@
         document.body.style.overflow = 'hidden';
     }
 
-    async deleteMessage(id) {
-        try {
-            const { initTCB, deleteMessage } = await import('./tcb-service.js');
-            await initTCB();
-            
-            const msg = this.messages.find(m => m.id === id || m._id === id);
-            const tcbId = msg?._id || id;
-            await deleteMessage(tcbId);
-            console.log('TCB: Message deleted:', tcbId);
-        } catch (error) {
-            console.error('TCB deleteMessage error:', error);
-        }
-
-        this.messages = this.messages.filter(m => m.id !== id && m._id !== id);
+    deleteMessage(id) {
+        this.messages = this.messages.filter(m => m.id !== id);
         localStorage.setItem('messages', JSON.stringify(this.messages));
         
         const totalPages = Math.ceil(this.messages.length / this.itemsPerPage);
@@ -331,60 +274,6 @@
             badge.textContent = this.unreadCount;
             badge.style.display = this.unreadCount > 0 ? 'flex' : 'none';
         }
-    }
-}
-
-function sendMessage(gameId, type = 'share', title = '游戏分享成功', content = '') {
-    let userId = 'anonymous';
-    let nickname = '匿名用户';
-    
-    if (window.UserManager && UserManager.isLoggedIn()) {
-        const user = UserManager.getUser();
-        userId = user?.id || user?.username || 'anonymous';
-        nickname = user?.nickname || user?.username || '匿名用户';
-    }
-
-    const message = {
-        id: Date.now().toString(),
-        userId: userId,
-        nickname: nickname,
-        title: title,
-        content: content || `您分享的数独游戏已发布到共创乐园！`,
-        time: new Date().toLocaleString('zh-CN'),
-        timestamp: Date.now(),
-        read: false,
-        type: type,
-        gameId: gameId,
-        participants: 0,
-        completed: 0
-    };
-
-    (async function saveMessage() {
-        try {
-            const { initTCB, addMessage } = await import('./tcb-service.js');
-            await initTCB();
-            const tcbId = await addMessage(message);
-            if (tcbId) {
-                message._id = tcbId;
-                const messages = JSON.parse(localStorage.getItem('messages') || '[]');
-                const idx = messages.findIndex(m => m.id === message.id);
-                if (idx !== -1) {
-                    messages[idx]._id = tcbId;
-                    localStorage.setItem('messages', JSON.stringify(messages));
-                }
-            }
-            console.log('TCB: Message sent');
-        } catch (error) {
-            console.error('TCB sendMessage error:', error);
-        }
-    })();
-
-    const messages = JSON.parse(localStorage.getItem('messages') || '[]');
-    messages.unshift(message);
-    localStorage.setItem('messages', JSON.stringify(messages));
-
-    if (window.messagePopup) {
-        window.messagePopup.loadMessages();
     }
 }
 

@@ -23,6 +23,158 @@
     <link rel="stylesheet" href="paradise.css">
     <link rel="stylesheet" href="settings.css">
     <link rel="stylesheet" href="message-popup.css">
+    <style>
+        .paradise-main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+        
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .welcome-section h2 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .welcome-section p {
+            font-size: 16px;
+            color: #666;
+        }
+        
+        .action-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        .code-input-section {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .code-input-section h3 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .code-input-section p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .code-input-wrapper {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .code-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .code-input:focus {
+            border-color: #FFA726;
+            outline: none;
+        }
+        
+        .load-btn {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #FFA726, #FF7043);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .load-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255,167,38,0.3);
+        }
+        
+        .error-message {
+            color: #f44336;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .editor-section {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .editor-section h3 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .editor-section p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .editor-btn {
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #7E57C2, #5E35B1);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .editor-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(126,87,194,0.3);
+        }
+        
+        .tip-section {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        
+        .tip-section h4 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+        
+        .tip-section ul {
+            color: #1976d2;
+            font-size: 14px;
+            line-height: 1.8;
+            padding-left: 20px;
+        }
+    </style>
 </head>
 <body>
     <header class="game-header">
@@ -43,45 +195,40 @@
     </header>
 
     <main class="paradise-main">
-        <div class="section-header">
-            <div>
-                <h2>玩家分享的游戏</h2>
-                <p>探索其他玩家创建的精彩数独挑战</p>
-            </div>
-            <button class="custom-game-btn" onclick="createCustomGame()">自定义游戏</button>
+        <div class="welcome-section">
+            <h2>共创乐园</h2>
+            <p>粘贴好友分享的游戏编码，或创建你的专属数独</p>
         </div>
 
-        <!-- 筛选和搜索区域 -->
-        <div class="filter-section">
-            <!-- 搜索框 -->
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="搜索昵称或游戏编号..." class="search-input">
-                <button class="search-btn" onclick="searchGames()"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button>
+        <div class="action-container">
+            <!-- 粘贴编码区域 -->
+            <div class="code-input-section">
+                <h3>🎮 粘贴游戏编码</h3>
+                <p>好友分享的编码？粘贴在这里开始挑战！</p>
+                <div class="code-input-wrapper">
+                    <input type="text" id="gameCodeInput" class="code-input" placeholder="粘贴游戏编码...">
+                    <button class="load-btn" onclick="loadGameFromCode()">开始游戏</button>
+                </div>
+                <div class="error-message" id="errorMessage"></div>
             </div>
 
-            <!-- 筛选选项 -->
-            <div class="filter-options">
-                <select id="filterSelect" class="filter-select" onchange="filterGames()">
-                    <option value="all">所有游戏</option>
-                    <option value="mine">我分享的游戏</option>
-                    <option value="others">其他玩家的游戏</option>
-                </select>
-
-                <select id="sortSelect" class="filter-select" onchange="sortGames()">
-                    <option value="newest">最新分享</option>
-                    <option value="oldest">最早分享</option>
-                </select>
+            <!-- 进入编辑器区域 -->
+            <div class="editor-section">
+                <h3>✏️ 创建自定义数独</h3>
+                <p>想设计自己的数独谜题？进入编辑器开始创作！</p>
+                <button class="editor-btn" onclick="window.location.href='custom-editor.html'">进入编辑器</button>
             </div>
-        </div>
 
-        <div class="game-grid" id="gameGrid">
-            <!-- 游戏卡片将通过JavaScript动态生成 -->
-        </div>
-
-        <div class="empty-state" id="emptyState" style="display: none;">
-            <img src="images/网站logo.svg" alt="暂无分享" class="empty-icon">
-            <p>暂无玩家分享的游戏</p>
-            <button class="empty-btn" onclick="window.location.href='game.html'">去创建你的第一个游戏</button>
+            <!-- 使用提示 -->
+            <div class="tip-section">
+                <h4>💡 使用提示</h4>
+                <ul>
+                    <li>在趣味数独中点击「分享」可生成游戏编码</li>
+                    <li>将编码发送给好友，好友粘贴即可玩同一局游戏</li>
+                    <li>编辑器中可以自定义数独并分享</li>
+                    <li>站内信会保存你的分享记录和编码</li>
+                </ul>
+            </div>
         </div>
     </main>
 
@@ -91,9 +238,65 @@
 
     <script src="js/user.js"></script>
     <script src="js/user-menu.js"></script>
-    <script type="module" src="js/paradise.js"></script>
     <script src="js/settings-menu.js"></script>
     <script src="js/audio-manager.js"></script>
     <script src="js/message-popup.js"></script>
+    <script>
+        // 解析游戏编码
+        function parseGameCode(code) {
+            try {
+                const utf8String = atob(code);
+                const jsonString = decodeURIComponent(escape(utf8String));
+                return JSON.parse(jsonString);
+            } catch (error) {
+                console.error('解析编码失败:', error);
+                return null;
+            }
+        }
+
+        // 加载游戏
+        function loadGameFromCode() {
+            const codeInput = document.getElementById('gameCodeInput');
+            const errorMessage = document.getElementById('errorMessage');
+            const code = codeInput.value.trim();
+
+            if (!code) {
+                errorMessage.textContent = '请输入游戏编码';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            const gameData = parseGameCode(code);
+
+            if (!gameData) {
+                errorMessage.textContent = '编码无效，请检查是否正确复制';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            // 验证必要字段
+            if (!gameData.puzzle || !gameData.solution || !gameData.difficulty) {
+                errorMessage.textContent = '编码数据不完整';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            // 保存游戏数据到 localStorage
+            localStorage.setItem('loadedSharedGame', JSON.stringify({
+                ...gameData,
+                gameCode: code
+            }));
+
+            // 跳转到游戏页面
+            window.location.href = 'custom-game.html';
+        }
+
+        // 监听输入框回车
+        document.getElementById('gameCodeInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                loadGameFromCode();
+            }
+        });
+    </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-﻿// 自定义游戏编辑器模块
+// 自定义游戏编辑器模块
 
 // 全局变量
 let currentPuzzle = Array(81).fill(0);
@@ -723,7 +723,7 @@ function shareGame() {
     }
 
     // 获取当前用户信息
-    const user = UserManager?.getUser ? UserManager.getUser() : { nickname: '当前玩家', defaultSlogan: '' };
+    const user = window.UserManager?.getUser ? UserManager.getUser() : { nickname: '当前玩家', defaultSlogan: '' };
     
     // 创建分享对话框
     const dialog = document.createElement('div');
@@ -733,7 +733,7 @@ function shareGame() {
     content.classList.add('new-game-dialog-content');
 
     const title = document.createElement('h3');
-    title.textContent = '分享游戏到共创乐园';
+    title.textContent = '分享游戏';
     content.appendChild(title);
 
     const desc = document.createElement('p');
@@ -753,7 +753,7 @@ function shareGame() {
     sloganInput.value = user.defaultSlogan || generateRandomSlogan();
     inputContainer.appendChild(sloganInput);
 
-    // 随机生成按钮（使用SVG图标）
+    // 随机生成按钮
     const randomBtn = document.createElement('button');
     randomBtn.classList.add('random-btn');
     randomBtn.innerHTML = `
@@ -785,61 +785,180 @@ function shareGame() {
     btnContainer.classList.add('dialog-buttons');
 
     const confirmBtn = document.createElement('button');
-    confirmBtn.textContent = '分享';
+    confirmBtn.textContent = '生成编码';
     confirmBtn.classList.add('dialog-btn', 'dialog-btn-primary');
-    confirmBtn.addEventListener('click', async () => {
+    confirmBtn.addEventListener('click', () => {
         const slogan = sloganInput.value.trim() || '未命名游戏';
 
-        // 生成游戏编号
-        const gameId = generateGameId();
-        
-        // 创建分享数据
-        const sharedGame = {
-            id: Date.now().toString(),
-            gameCode: gameId,
-            userId: user?.id || null,        // 用户ID（不会变化）
-            username: user?.username || null, // 用户名（不会变化）
-            nickname: user?.nickname || user?.username || '当前玩家', // 昵称（可变化）
+        // 创建游戏数据
+        const gameData = {
             puzzle: currentPuzzle.join(''),
             solution: currentSolution.join(''),
-            playerPuzzle: currentPuzzle.join(''),
-            slogan: slogan,
             difficulty: detectedDifficulty,
+            slogan: slogan,
+            nickname: user?.nickname || user?.username || '匿名玩家',
             shareTime: new Date().toLocaleString('zh-CN'),
-            participants: 0,
-            completed: 0,
-            notes: {},
-            moves: []
+            version: '1.0'
         };
-
-        // 保存到本地存储
-        const sharedGames = JSON.parse(localStorage.getItem('sharedGames') || '[]');
-        sharedGames.unshift(sharedGame);
-        localStorage.setItem('sharedGames', JSON.stringify(sharedGames));
-
-        // 同步到腾讯云开发
-        (async function saveToTCB() {
-            try {
-                const { initTCB, addSharedGame } = await import('./tcb-service.js');
-                await initTCB();
-                await addSharedGame(sharedGame);
-                console.log('TCB: Game shared successfully');
-            } catch (error) {
-                console.error('TCB share error:', error);
-            }
-        })();
-
-        // 发送站内信（使用游戏的 id 而不是 gameCode）
-        await sendMessage(sharedGame.id);
-
+        
+        // 生成 Base64 编码
+        const gameCode = generateGameCode(gameData);
+        
+        // 显示编码对话框
+        showGameCodeDialog(gameCode, slogan);
+        
+        // 发送站内信
+        sendShareMessage(gameCode, slogan);
+        
         dialog.remove();
-        alert(`分享成功！\n\n游戏已发布到共创乐园\n游戏编号：${gameId}\n\n站内信已发送`);
     });
     btnContainer.appendChild(confirmBtn);
 
     content.appendChild(btnContainer);
     dialog.appendChild(content);
     document.body.appendChild(dialog);
+}
+
+// 生成游戏编码（Base64）
+function generateGameCode(gameData) {
+    try {
+        const jsonString = JSON.stringify(gameData);
+        const utf8String = unescape(encodeURIComponent(jsonString));
+        const base64 = btoa(utf8String);
+        return base64;
+    } catch (error) {
+        console.error('生成编码失败:', error);
+        return null;
+    }
+}
+
+// 显示编码对话框
+function showGameCodeDialog(gameCode, slogan) {
+    const dialog = document.createElement('div');
+    dialog.classList.add('new-game-dialog');
+
+    const content = document.createElement('div');
+    content.classList.add('new-game-dialog-content');
+    content.style.maxWidth = '500px';
+
+    const title = document.createElement('h3');
+    title.textContent = '游戏编码已生成';
+    title.style.color = '#4CAF50';
+    content.appendChild(title);
+
+    const desc = document.createElement('p');
+    desc.textContent = `标语：${slogan}`;
+    desc.style.marginBottom = '15px';
+    content.appendChild(desc);
+
+    // 编码显示区域
+    const codeContainer = document.createElement('div');
+    codeContainer.style.cssText = `
+        background: #f5f5f5;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+    `;
+
+    const codeLabel = document.createElement('p');
+    codeLabel.textContent = '游戏编码：';
+    codeLabel.style.fontWeight = 'bold';
+    codeLabel.style.marginBottom = '10px';
+    codeContainer.appendChild(codeLabel);
+
+    const codeText = document.createElement('textarea');
+    codeText.value = gameCode;
+    codeText.readOnly = true;
+    codeText.style.cssText = `
+        width: 100%;
+        height: 80px;
+        border: none;
+        background: transparent;
+        resize: none;
+        font-size: 12px;
+        line-height: 1.5;
+    `;
+    codeContainer.appendChild(codeText);
+
+    content.appendChild(codeContainer);
+
+    // 提示信息
+    const tip = document.createElement('p');
+    tip.innerHTML = '💡 <strong>使用方法：</strong><br>1. 复制上方编码<br>2. 发送给好友<br>3. 好友在共创乐园粘贴即可玩同一局游戏';
+    tip.style.cssText = `
+        background: #e3f2fd;
+        padding: 12px;
+        border-radius: 8px;
+        color: #1976d2;
+        font-size: 13px;
+        margin-bottom: 15px;
+    `;
+    content.appendChild(tip);
+
+    // 按钮
+    const btnContainer = document.createElement('div');
+    btnContainer.classList.add('dialog-buttons');
+
+    const copyBtn = document.createElement('button');
+    copyBtn.textContent = '复制编码';
+    copyBtn.classList.add('dialog-btn', 'dialog-btn-primary');
+    copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(gameCode).then(() => {
+            copyBtn.textContent = '已复制 ✓';
+            copyBtn.style.background = '#4CAF50';
+            setTimeout(() => {
+                copyBtn.textContent = '复制编码';
+                copyBtn.style.background = '';
+            }, 2000);
+        }).catch(() => {
+            codeText.select();
+            document.execCommand('copy');
+            copyBtn.textContent = '已复制 ✓';
+        });
+    });
+    btnContainer.appendChild(copyBtn);
+
+    const closeBtn = document.createElement('button');
+    closeBtn.textContent = '关闭';
+    closeBtn.classList.add('dialog-btn', 'dialog-btn-secondary');
+    closeBtn.addEventListener('click', () => {
+        dialog.remove();
+    });
+    btnContainer.appendChild(closeBtn);
+
+    content.appendChild(btnContainer);
+    dialog.appendChild(content);
+    document.body.appendChild(dialog);
+
+    dialog.addEventListener('click', (e) => {
+        if (e.target === dialog) {
+            dialog.remove();
+        }
+    });
+}
+
+// 发送分享成功的站内信
+function sendShareMessage(gameCode, slogan) {
+    const messages = JSON.parse(localStorage.getItem('messages') || '[]');
+    
+    messages.unshift({
+        id: Date.now().toString(),
+        title: '游戏分享成功',
+        content: `您分享的数独游戏「${slogan}」已生成编码！\n\n编码：${gameCode.substring(0, 20)}...\n\n将此编码发送给好友，好友在共创乐园粘贴即可玩同一局游戏。`,
+        time: new Date().toLocaleString('zh-CN'),
+        read: false,
+        type: 'share',
+        gameCode: gameCode,
+        slogan: slogan
+    });
+    
+    localStorage.setItem('messages', JSON.stringify(messages));
+    
+    // 更新消息徽章
+    if (window.messagePopup) {
+        window.messagePopup.loadMessages();
+    }
 }
 
 // 执行核验（唯一解和难度判定）
@@ -924,58 +1043,4 @@ function generateGameId() {
     const timestamp = Date.now();
     
     return `${year}${month}${day}-${timestamp}`;
-}
-
-// 发送站内信
-async function sendMessage(gameId, type = 'system', title = '系统通知', content = '') {
-    let userId = 'anonymous';
-    let nickname = '匿名用户';
-    
-    if (window.UserManager && UserManager.isLoggedIn()) {
-        const user = UserManager.getUser();
-        userId = user?.id || user?.username || 'anonymous';
-        nickname = user?.nickname || user?.username || '匿名用户';
-    }
-
-    const message = {
-        id: Date.now().toString(),
-        userId: userId,
-        nickname: nickname,
-        title: title || '系统通知',
-        content: content || `您分享的数独游戏已发布到共创乐园！游戏编号：${gameId}`,
-        time: new Date().toLocaleString('zh-CN'),
-        timestamp: Date.now(),
-        read: false,
-        type: type,
-        gameId: gameId,
-        participants: 0,
-        completed: 0
-    };
-
-    try {
-        const { initTCB, addMessage } = await import('./tcb-service.js');
-        await initTCB();
-        const tcbId = await addMessage(message);
-        if (tcbId) {
-            message._id = tcbId;
-        }
-        console.log('TCB: Message sent');
-    } catch (error) {
-        console.error('TCB sendMessage error:', error);
-    }
-
-    const messages = JSON.parse(localStorage.getItem('messages') || '[]');
-    
-    const exists = messages.some(m => 
-        !m.read && m.gameId === gameId && m.type === type
-    );
-    
-    if (!exists) {
-        messages.unshift(message);
-        localStorage.setItem('messages', JSON.stringify(messages));
-    }
-    
-    if (window.messagePopup) {
-        window.messagePopup.loadMessages();
-    }
 }
