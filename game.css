@@ -11,6 +11,7 @@ body {
     background: var(--theme-gradient, linear-gradient(180deg, #FFA726 0%, #FF7043 100%));
     min-height: 100vh;
     color: #fff;
+    overflow-x: hidden;
 }
 
 .game-header {
@@ -509,11 +510,11 @@ body {
 
 footer {
     text-align: center;
-    padding: 20px;
+    padding: 0 20px 20px;
     font-size: 12px;
     color: rgba(255, 255, 255, 0.8);
     font-family: "Noto Sans SC", "Source Han Sans CN", "Microsoft YaHei", sans-serif;
-    margin-top: 40px;
+    margin-top: 10px;
 }
 
 .new-game-dialog {
@@ -699,19 +700,97 @@ footer {
 }
 
 @media (max-width: 768px) {
+    .game-main {
+        padding: 15px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
     .game-content {
         flex-direction: column;
         align-items: center;
         gap: 5px;
+        width: 100%;
+    }
+
+    .sudoku-grid {
+        width: 100%;
+        max-width: 360px;
     }
 
     .grid-container {
-        grid-template-columns: repeat(9, 40px);
-        grid-template-rows: repeat(9, 40px);
+        display: flex;
+        flex-wrap: wrap;
+        border: 2.5px solid #fff;
+        border-radius: 4px;
+        overflow: hidden;
+        width: 100%;
+        aspect-ratio: 1;
     }
 
-    .cell {
-        font-size: 20px;
+    .grid-container .cell {
+        width: calc(100% / 9);
+        height: calc(100% / 9);
+        font-size: clamp(18px, 5.5vw, 32px);
+        border: 1px solid rgba(255,255,255,0.25);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        cursor: pointer;
+        color: rgba(255,255,255,0.6);
+        background: transparent;
+        transition: background 0.2s;
+        font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif;
+        box-sizing: border-box;
+    }
+
+    .grid-container .cell.thick-right {
+        border-right: 2px solid rgba(255,255,255,0.5);
+    }
+
+    .grid-container .cell.thick-bottom {
+        border-bottom: 2px solid rgba(255,255,255,0.5);
+    }
+
+    .grid-container .cell:hover {
+        background: rgba(255,255,255,0.15);
+    }
+
+    .grid-container .cell.selected {
+        background: rgba(255,255,255,0.35);
+    }
+
+    .grid-container .cell.highlight-row,
+    .grid-container .cell.highlight-col,
+    .grid-container .cell.highlight-box {
+        background: rgba(255,255,255,0.25);
+    }
+
+    .grid-container .cell.highlight-num {
+        background: rgba(255,255,255,0.2);
+    }
+
+    .grid-container .cell.error {
+        background: rgba(255, 0, 0, 0.3);
+    }
+
+    .grid-container .cell.same-number {
+        background: rgba(255,255,255,0.2);
+    }
+
+    .grid-container .cell.fixed {
+        color: #fff;
+        font-weight: bold;
+    }
+
+    .grid-container .cell.user-input {
+        color: #fff;
+        text-decoration: underline;
+    }
+
+    .grid-container .cell.error {
+        color: rgba(231,76,60,1);
     }
 
     .control-panel {
@@ -722,16 +801,15 @@ footer {
         flex-direction: row;
         justify-content: center;
         align-items: flex-start;
-        gap: 12px;
-        padding: 20px 0;
-        overflow: hidden;
+        gap: 8px;
+        padding: 10px 0;
         box-sizing: border-box;
     }
 
     .action-btns-wrapper {
         display: flex;
         flex-direction: row;
-        gap: 12px;
+        gap: 8px;
         width: auto;
     }
 
@@ -744,6 +822,7 @@ footer {
         display: flex;
         align-items: center;
         justify-content: center;
+        border-width: 1px;
     }
 
     .num-pad {
@@ -756,6 +835,7 @@ footer {
         width: 50px;
         height: 50px;
         font-size: 20px;
+        border-width: 1px;
     }
 
     .num-btn .count {
@@ -768,16 +848,16 @@ footer {
         gap: 12px;
     }
 
-    .action-btns .left-group {
+    .action-btns .left-group,
+    .action-btns .right-group {
         display: flex;
         flex-direction: column;
         gap: 12px;
     }
 
-    .action-btns .right-group {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
+    .action-btns .action-btn {
+        width: 100%;
+        border-width: 1px;
     }
 
     .action-btns .action-btn.wide {
@@ -789,9 +869,15 @@ footer {
         display: flex;
         align-items: center;
         justify-content: center;
+        border-width: 1px;
     }
 
     .action-btns .action-btn.wide#undoBtn {
+        width: 50px;
+        height: 50px;
+    }
+
+    .action-btns .action-btn.wide#randomBtn {
         width: 50px;
         height: 50px;
     }
@@ -805,11 +891,140 @@ footer {
         display: flex;
         align-items: center;
         justify-content: center;
+        border-width: 1px;
     }
 
     .action-btns .action-btn.square#clearBtn {
         width: 50px;
         height: 112px;
+    }
+
+    @media (max-width: 389px) {
+        .game-header {
+            padding: 6px 12px;
+        }
+
+        .logo {
+            width: 28px;
+            height: 28px;
+        }
+
+        .nav-tabs .tab {
+            padding: 3px 12px;
+            font-size: 10px;
+            border-width: 1.5px;
+        }
+
+        .header-icons img {
+            width: 14px;
+            height: 14px;
+        }
+
+        .difficulty-timer-wrapper {
+            height: 34px;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .difficulty-btn {
+            padding: 6px 14px;
+            font-size: 12px;
+            border-width: 2px;
+        }
+
+        .difficulty-text {
+            font-size: 12px;
+        }
+
+        .difficulty-stars {
+            font-size: 14px;
+        }
+
+        .timer-display {
+            height: 34px;
+            padding: 0px 12px;
+            font-size: 12px;
+            border-width: 2px;
+        }
+
+        .timer-icon {
+            width: 14px;
+            height: 14px;
+        }
+
+        .timer-time {
+            font-size: 14px;
+        }
+
+        .music-control-btn {
+            width: 40px;
+            height: 34px;
+            border-width: 2px;
+        }
+
+        .music-icon {
+            width: 14px;
+            height: 14px;
+        }
+
+        .control-panel {
+            gap: 6px;
+        }
+
+        .action-btns-wrapper {
+            gap: 6px;
+        }
+
+        .new-game-btn {
+            width: 48px;
+            height: 156px;
+        }
+
+        .num-pad {
+            grid-template-columns: repeat(3, 48px);
+            grid-template-rows: repeat(3, 48px);
+            gap: 6px;
+        }
+
+        .num-btn {
+            width: 48px;
+            height: 48px;
+            font-size: 18px;
+        }
+
+        .action-btns {
+            gap: 6px;
+        }
+
+        .action-btns .left-group,
+        .action-btns .right-group {
+            gap: 6px;
+        }
+
+        .action-btns .action-btn.wide {
+            width: 48px;
+            height: 102px;
+        }
+
+        .action-btns .action-btn.wide#undoBtn {
+            width: 48px;
+            height: 48px;
+        }
+
+        .action-btns .action-btn.wide#randomBtn {
+            width: 48px;
+            height: 48px;
+        }
+
+        .action-btns .action-btn.square {
+            width: 48px;
+            height: 48px;
+        }
+
+        .action-btns .action-btn.square#clearBtn {
+            width: 48px;
+            height: 102px;
+        }
     }
 
     .comment-section {
@@ -836,5 +1051,27 @@ footer {
     .send-btn {
         font-size: 9px;
         padding: 6px 12px;
+    }
+
+    .code-input-section {
+        padding: 10px 0 20px;
+        margin: 20px 0 0;
+        max-width: 100%;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .code-input-wrapper {
+        padding: 0 15px;
+    }
+
+    .code-input {
+        font-size: 12px;
+        padding: 10px 0;
+    }
+
+    .generate-btn {
+        font-size: 12px;
+        padding: 8px 16px;
     }
 }
