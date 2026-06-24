@@ -158,13 +158,13 @@ footer {
 
 /* 共创乐园卡片图标放大到50x50px */
 .paradise-card .card-icon-wrapper {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
 }
 
 .paradise-card .card-icon {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
 }
 
 /* 通用样式类 */
