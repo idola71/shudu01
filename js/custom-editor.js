@@ -909,15 +909,7 @@ function shareGame() {
 
 // 生成游戏编码（Base64）
 function generateGameCode(gameData) {
-    try {
-        const jsonString = JSON.stringify(gameData);
-        const utf8String = unescape(encodeURIComponent(jsonString));
-        const base64 = btoa(utf8String);
-        return base64;
-    } catch (error) {
-        console.error('生成编码失败:', error);
-        return null;
-    }
+    return gameData.puzzle;
 }
 
 // 显示编码对话框
@@ -1136,9 +1128,65 @@ function generateGameId() {
 // 解析游戏编码
 function parseGameCode(code) {
     try {
+        code = code.trim();
+        
+        if (/^\d{81}$/.test(code)) {
+            const puzzle = code.split('').map(Number);
+            
+            const solver = new SudokuSolver();
+            
+            if (!solver.isValid(puzzle)) {
+                return null;
+            }
+            
+            const solutionCount = solver.countSolutions(puzzle, 3);
+            if (solutionCount !== 1) {
+                return null;
+            }
+            
+            const solution = solver.solve(puzzle);
+            if (!solution) {
+                return null;
+            }
+            
+            const holes = puzzle.filter(v => v === 0).length;
+            
+            let diff = 'easy';
+            const difficulties = ['easy', 'medium', 'hard', 'expert'];
+            for (const key of difficulties) {
+                const config = DIFFICULTY_CONFIG[key];
+                if (holes >= config.minHoles && holes <= config.maxHoles) {
+                    diff = key;
+                    break;
+                }
+            }
+            
+            return {
+                puzzle: code,
+                solution: solution.join(''),
+                difficulty: diff,
+                slogan: '',
+                nickname: '匿名玩家',
+                shareTime: '',
+                version: '3.0'
+            };
+        }
+        
         const utf8String = atob(code);
         const jsonString = decodeURIComponent(escape(utf8String));
-        return JSON.parse(jsonString);
+        const data = JSON.parse(jsonString);
+        
+        const difficultyMap = { 0: 'easy', 1: 'medium', 2: 'hard' };
+        
+        return {
+            puzzle: data.p || data.puzzle,
+            solution: data.s || data.solution,
+            difficulty: difficultyMap[data.d] || data.difficulty || 'easy',
+            slogan: data.slogan || '',
+            nickname: data.nickname || '匿名玩家',
+            shareTime: data.shareTime || '',
+            version: data.version || '2.0'
+        };
     } catch (error) {
         console.error('解析编码失败:', error);
         return null;
@@ -1156,40 +1204,73 @@ function generateGameFromCode() {
         return;
     }
 
-    const gameData = parseGameCode(code);
-
-    if (!gameData) {
-        errorDiv.textContent = '编码无效，请检查是否正确复制';
+    if (!/^\d{81}$/.test(code)) {
+        errorDiv.textContent = '编码格式错误，必须是81个阿拉伯数字';
         return;
     }
 
-    if (!gameData.puzzle || !gameData.solution || !gameData.difficulty) {
-        errorDiv.textContent = '编码数据不完整';
+    const puzzle = code.split('').map(Number);
+    const filledCount = puzzle.filter(v => v !== 0).length;
+    
+    if (filledCount === 0) {
+        errorDiv.textContent = '棋盘为空，请输入有效的数字';
         return;
     }
 
-    // 清空棋盘
-    currentPuzzle = Array(81).fill(0);
-    currentSolution = gameData.solution.split('').map(Number);
-    detectedDifficulty = gameData.difficulty;
+    const solver = new SudokuSolver();
+    
+    if (!solver.isValid(puzzle)) {
+        errorDiv.textContent = '棋盘存在重复数字，请检查！';
+        return;
+    }
 
-    // 设置棋盘为谜题数据
-    const puzzleArr = gameData.puzzle.split('').map(Number);
-    currentPuzzle = [...puzzleArr];
+    const solutionCount = solver.countSolutions(puzzle, 3);
+    if (solutionCount === 0) {
+        errorDiv.textContent = '当前棋盘无解！';
+        return;
+    }
+    if (solutionCount > 1) {
+        errorDiv.textContent = '当前棋盘存在多个解，请修改！';
+        return;
+    }
 
-    // 重新渲染棋盘
+    const solution = solver.solve(puzzle);
+    if (!solution) {
+        errorDiv.textContent = '无法求解当前棋盘！';
+        return;
+    }
+
+    const holes = 81 - filledCount;
+    
+    if (holes < 30) {
+        errorDiv.textContent = `当前游戏过于简单（仅${holes}个空格），请至少保留30个空格！`;
+        return;
+    }
+
+    let diff = 'easy';
+    for (const [key, config] of Object.entries(DIFFICULTY_CONFIG)) {
+        if (holes >= config.minHoles && holes <= config.maxHoles) {
+            diff = key;
+            break;
+        }
+    }
+
+    currentPuzzle = [...puzzle];
+    currentSolution = solution;
+    detectedDifficulty = diff;
+
     renderBoard('gridContainer', currentPuzzle);
     
-    // 更新难度显示
-    const diffConfig = DIFFICULTY_CONFIG[gameData.difficulty] || DIFFICULTY_CONFIG.medium;
-    document.querySelector('.difficulty-text').textContent = diffConfig.name;
-    document.querySelector('.difficulty-stars').textContent = '★'.repeat(diffConfig.stars);
-
-    // 清空错误提示
-    errorDiv.textContent = '';
+    const diffConfig = DIFFICULTY_CONFIG[diff];
+    if (document.querySelector('.difficulty-text')) {
+        document.querySelector('.difficulty-text').textContent = diffConfig.name;
+    }
+    if (document.querySelector('.difficulty-stars')) {
+        document.querySelector('.difficulty-stars').textContent = '★'.repeat(diffConfig.stars) + '☆'.repeat(4 - diffConfig.stars);
+    }
     
-    // 提示成功
-    showSuccessMessage('游戏已生成！');
+    errorDiv.textContent = '';
+    alert(`游戏生成成功！\n\n难度：${diffConfig.name}\n空格数：${holes}`);
 }
 
 function showSuccessMessage(message) {

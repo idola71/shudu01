@@ -1706,24 +1706,72 @@ function shareToParadise() {
 
 // 生成游戏编码（Base64）
 function generateGameCode(gameData) {
-    try {
-        const jsonString = JSON.stringify(gameData);
-        // 使用 UTF-8 编码
-        const utf8String = unescape(encodeURIComponent(jsonString));
-        const base64 = btoa(utf8String);
-        return base64;
-    } catch (error) {
-        console.error('生成编码失败:', error);
-        return null;
-    }
+    return gameData.puzzle;
 }
 
 // 解析游戏编码
 function parseGameCode(code) {
     try {
+        code = code.trim();
+        
+        if (/^\d{81}$/.test(code)) {
+            const puzzle = code.split('').map(Number);
+            
+            const solver = new SudokuSolver();
+            
+            if (!solver.isValid(puzzle)) {
+                return null;
+            }
+            
+            const solutionCount = solver.countSolutions(puzzle, 3);
+            if (solutionCount !== 1) {
+                return null;
+            }
+            
+            const solution = solver.solve(puzzle);
+            if (!solution) {
+                return null;
+            }
+            
+            const holes = puzzle.filter(v => v === 0).length;
+            
+            let diff = 'easy';
+            const difficulties = ['easy', 'medium', 'hard', 'expert'];
+            for (const key of difficulties) {
+                const config = DIFFICULTY_CONFIG[key];
+                const targetHoles = config.holes;
+                if (holes >= targetHoles - 5 && holes <= targetHoles + 5) {
+                    diff = key;
+                    break;
+                }
+            }
+            
+            return {
+                puzzle: code,
+                solution: solution.join(''),
+                difficulty: diff,
+                slogan: '',
+                nickname: '匿名玩家',
+                shareTime: '',
+                version: '3.0'
+            };
+        }
+        
         const utf8String = atob(code);
         const jsonString = decodeURIComponent(escape(utf8String));
-        return JSON.parse(jsonString);
+        const data = JSON.parse(jsonString);
+        
+        const difficultyMap = { 0: 'easy', 1: 'medium', 2: 'hard' };
+        
+        return {
+            puzzle: data.p || data.puzzle,
+            solution: data.s || data.solution,
+            difficulty: difficultyMap[data.d] || data.difficulty || 'easy',
+            slogan: data.slogan || '',
+            nickname: data.nickname || '匿名玩家',
+            shareTime: data.shareTime || '',
+            version: data.version || '2.0'
+        };
     } catch (error) {
         console.error('解析编码失败:', error);
         return null;
